@@ -13,14 +13,21 @@ This is an interface to Pushover.net.
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell   #-}
 
-module Network.API.Pushover
-  (Message(..), PriorityLevel(..), Sound(..), Acknowledgment(..), Receipt(..), Response(..),
-   token, user, body, attachment, device, title, url, urlTitle, priority, sound,
-   status, request, receipt, errors, emergency,
-   eparams, retry, expire, callback, tags,
-   message, sendMessage,
-   getReceipt,
-   ackAt, ackBy, ackOn, acknowledged, calledBackAt, expired, expiresAt, lastDeliveredAt,
+module Network.API.Pushover (
+  -- * Functions interacting with the the Pushover service.
+  sendMessage, getReceipt,
+  -- * Message ingredients.
+  message,
+  -- * Additional fields for emergency requests.
+  emergency, eparams, retry, expire, callback, tags,
+  Message(..), PriorityLevel(..), Sound(..),
+  token, user, body, attachment, device, title, url, urlTitle, priority, sound,
+  -- * Response to sendMessage
+  Response(..),
+  status, request, receipt, errors,
+  -- Receipt stuff.
+  Acknowledgment(..), Receipt(..),
+  ackAt, ackBy, ackOn, acknowledged, calledBackAt, expired, expiresAt, lastDeliveredAt,
    -- For testing
    parseResponse
   ) where
@@ -50,7 +57,9 @@ import           Network.Wreq              (FormParam (..), checkResponse,
                                             statusCode)
 import           Network.Wreq.Types        (Options, ResponseChecker)
 
-
+-- | EmergencyParams provides parameters necessary for sending an
+-- emergency message.  See 'emergency' for a default emergency
+-- PriorityLevel.
 data EmergencyParams = EmergencyParams {
   _retry      :: Int
   , _expire   :: Int
@@ -64,6 +73,8 @@ makeLenses ''EmergencyParams
 data PriorityLevel = VeryLow | Low | Normal | High | Emergency EmergencyParams
   deriving(Generic, Eq, Show)
 
+-- | eparams gets or sets emergency parameters through a PriorityLevel
+-- (which may or may not be an Emergency).
 eparams :: Lens' PriorityLevel (Maybe EmergencyParams)
 eparams = lens r w
   where
@@ -74,7 +85,7 @@ eparams = lens r w
     w (Emergency _) (Just v) = Emergency $ v
     w p _                    = p
 
-
+-- | An Emergency PriorityLevel with default EmergencyParams.
 emergency :: PriorityLevel
 emergency = Emergency EmergencyParams{_retry=300,  _expire=3600, _callback="", _tags=""}
 
@@ -84,6 +95,7 @@ data Sound = None | Bike | Bugle | CashRegister | Classical
            | Tugboat | Alien | Climb | Persistent | Echo | UpDown
            deriving (Show, Eq)
 
+-- | A message to be sent via 'sendMessage'.
 data Message = Message {
   _token        :: Text
   , _user       :: Text
@@ -147,9 +159,11 @@ params m = [
     pval High          = 1
     pval (Emergency _) = 2
 
+-- | Build a message with defaults given an API Token, User ID, and initial message.
 message :: Text -> Text -> Text ->  Message
-message t u b = def & token .~ t & user .~ u & body .~ b
+message t u b = def{_token=t, _user=u, _body=b}
 
+-- | The response to a 'sendMessage' request.
 data Response = Response { _status  :: Int
                          , _request :: Text
                          , _receipt :: Text
@@ -186,12 +200,14 @@ transmit u note = do
   r <- postWith opts u (params note)
   pure $ parseResponse $ r ^. responseBody
 
+-- | Send a message.
 sendMessage :: Message -> IO (Either Response Response)
 sendMessage = transmit "https://api.pushover.net/1/messages.json"
 
 stime :: Scientific -> UTCTime
 stime = systemToUTCTime . flip MkSystemTime 0 . fromJust . toBoundedInteger
 
+-- | An acknowledgment of an emergency message.
 data Acknowledgment = Acknowledgment{
   _ackAt   :: UTCTime
   , _ackBy :: Text
@@ -200,6 +216,7 @@ data Acknowledgment = Acknowledgment{
 
 makeLenses ''Acknowledgment
 
+-- | Receipt represents the current status of receipt of an emergency message.
 data Receipt = Receipt{
   _acknowledged      :: Maybe Acknowledgment
   , _lastDeliveredAt :: Maybe UTCTime
@@ -246,6 +263,7 @@ instance FromJSON Receipt where
 
   parseJSON invalid    = typeMismatch "Response" invalid
 
+-- | Get the Receipt for an emergency message.
 getReceipt :: Text -> Text -> IO (Either String Receipt)
 getReceipt tok recpt = do
   let u = mconcat ["https://api.pushover.net/1/receipts/", recpt, ".json?token=", tok]
