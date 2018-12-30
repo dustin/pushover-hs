@@ -1,0 +1,71 @@
+name:                pushover-hs
+version:             0.1.0.0
+github:              "dustin/pushover-hs"
+license:             BSD3
+author:              "Dustin Sallings"
+maintainer:          "dustin@spy.net"
+copyright:           "MIT"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+synopsis:            An interface to the pushover.net API.
+category:            API
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/dustin/pushover-hs#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- lens
+- data-default
+- time
+
+library:
+  source-dirs: src
+  ghc-options:
+  - -Wall
+  dependencies:
+  - text
+  - aeson
+  - parser-combinators
+  - wreq
+  - bytestring
+  - http-client
+  - generic-deriving
+  - scientific
+
+executables:
+  pushover-hs:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - pushover-hs
+    - text
+
+tests:
+  pushover-hs-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - pushover-hs
+    - QuickCheck
+    - HUnit
+    - tasty
+    - tasty-hunit
+    - tasty-quickcheck
+    - bytestring
+    - text
+    - aeson
