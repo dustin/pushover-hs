@@ -1,0 +1,1250 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span id="%24con2tag_3rnBlhKKAcE5hGLYp1ZIKw"></span><span class="hs-comment">{-|
+Module      : Pushover
+Description : An interface to NotifyMyAndroid.
+Copyright   : (c) Dustin Sallings, 2018
+License     : MIT
+Maintainer  : dustin@spy.net
+Stability   : experimental
+
+This is an interface to Pushover.net.
+-}</span><span>
+</span><span id="line-11"></span><span>
+</span><span id="line-12"></span><span class="hs-pragma">{-# LANGUAGE DeriveGeneric     #-}</span><span>
+</span><span id="line-13"></span><span class="hs-pragma">{-# LANGUAGE OverloadedStrings #-}</span><span>
+</span><span id="line-14"></span><span class="hs-pragma">{-# LANGUAGE TemplateHaskell   #-}</span><span>
+</span><span id="line-15"></span><span>
+</span><span id="line-16"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Network.API.Pushover</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-17"></span><span>  </span><span class="annot"><span class="hs-comment">-- * Functions interacting with the the Pushover service.</span></span><span>
+</span><span id="line-18"></span><span>  </span><span class="annot"><a href="Network.API.Pushover.html#sendMessage"><span class="hs-identifier">sendMessage</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#getReceipt"><span class="hs-identifier">getReceipt</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-19"></span><span>  </span><span class="annot"><span class="hs-comment">-- * Message ingredients.</span></span><span>
+</span><span id="line-20"></span><span>  </span><span class="annot"><a href="Network.API.Pushover.html#message"><span class="hs-identifier">message</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-21"></span><span>  </span><span class="annot"><span class="hs-comment">-- * Additional fields for emergency requests.</span></span><span>
+</span><span id="line-22"></span><span>  </span><span class="annot"><a href="Network.API.Pushover.html#emergency"><span class="hs-identifier">emergency</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#eparams"><span class="hs-identifier">eparams</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#retry"><span class="hs-identifier">retry</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#expire"><span class="hs-identifier">expire</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#callback"><span class="hs-identifier">callback</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#tags"><span class="hs-identifier">tags</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-23"></span><span>  </span><span class="annot"><a href="Network.API.Pushover.html#Message"><span class="hs-identifier">Message</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#PriorityLevel"><span class="hs-identifier">PriorityLevel</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#Sound"><span class="hs-identifier">Sound</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-24"></span><span>  </span><span class="annot"><a href="Network.API.Pushover.html#token"><span class="hs-identifier">token</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#user"><span class="hs-identifier">user</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#body"><span class="hs-identifier">body</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#attachment"><span class="hs-identifier">attachment</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#device"><span class="hs-identifier">device</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#title"><span class="hs-identifier">title</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#url"><span class="hs-identifier">url</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#urlTitle"><span class="hs-identifier">urlTitle</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#priority"><span class="hs-identifier">priority</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#sound"><span class="hs-identifier">sound</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-25"></span><span>  </span><span class="annot"><span class="hs-comment">-- * Response to sendMessage</span></span><span>
+</span><span id="line-26"></span><span>  </span><span class="annot"><a href="Network.API.Pushover.html#Response"><span class="hs-identifier">Response</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-27"></span><span>  </span><span class="annot"><a href="Network.API.Pushover.html#status"><span class="hs-identifier">status</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#request"><span class="hs-identifier">request</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#receipt"><span class="hs-identifier">receipt</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#errors"><span class="hs-identifier">errors</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-28"></span><span>  </span><span class="hs-comment">-- Receipt stuff.</span><span>
+</span><span id="line-29"></span><span>  </span><span class="annot"><a href="Network.API.Pushover.html#Acknowledgment"><span class="hs-identifier">Acknowledgment</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#Receipt"><span class="hs-identifier">Receipt</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-30"></span><span>  </span><span class="annot"><a href="Network.API.Pushover.html#ackAt"><span class="hs-identifier">ackAt</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#ackBy"><span class="hs-identifier">ackBy</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#ackOn"><span class="hs-identifier">ackOn</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#acknowledged"><span class="hs-identifier">acknowledged</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#calledBackAt"><span class="hs-identifier">calledBackAt</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#expired"><span class="hs-identifier">expired</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#expiresAt"><span class="hs-identifier">expiresAt</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#lastDeliveredAt"><span class="hs-identifier">lastDeliveredAt</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-31"></span><span>   </span><span class="hs-comment">-- For testing</span><span>
+</span><span id="line-32"></span><span>   </span><span class="annot"><a href="Network.API.Pushover.html#parseResponse"><span class="hs-identifier">parseResponse</span></a></span><span>
+</span><span id="line-33"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-34"></span><span>
+</span><span id="line-35"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Control.Exception</span></span><span>         </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">throwIO</span></span><span class="hs-special">)</span><span>
+</span><span id="line-36"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Control.Lens</span></span><span>
+</span><span id="line-37"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Control.Monad</span></span><span>             </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">guard</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">void</span></span><span class="hs-special">)</span><span>
+</span><span id="line-38"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Control.Monad.Combinators</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">option</span></span><span class="hs-special">)</span><span>
+</span><span id="line-39"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Aeson</span></span><span>                </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">FromJSON</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">Value</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-40"></span><span>                                            </span><span class="annot"><span class="hs-identifier">eitherDecode</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-operator">(.:)</span></span><span class="hs-special">)</span><span>
+</span><span id="line-41"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Aeson.Types</span></span><span>          </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">typeMismatch</span></span><span class="hs-special">)</span><span>
+</span><span id="line-42"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString</span></span><span>           </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">B</span></span><span>
+</span><span id="line-43"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString.Lazy</span></span><span>      </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">L</span></span><span>
+</span><span id="line-44"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Default</span></span><span>              </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Default</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">def</span></span><span class="hs-special">)</span><span>
+</span><span id="line-45"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Maybe</span></span><span>                </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">fromJust</span></span><span class="hs-special">)</span><span>
+</span><span id="line-46"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Scientific</span></span><span>           </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Scientific</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">toBoundedInteger</span></span><span class="hs-special">)</span><span>
+</span><span id="line-47"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Text</span></span><span>                 </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Text</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">pack</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">toLower</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">unpack</span></span><span class="hs-special">)</span><span>
+</span><span id="line-48"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Time</span></span><span>                 </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">UTCTime</span></span><span class="hs-special">)</span><span>
+</span><span id="line-49"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Time.Clock.POSIX</span></span><span>     </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">utcTimeToPOSIXSeconds</span></span><span class="hs-special">)</span><span>
+</span><span id="line-50"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Time.Clock.System</span></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">SystemTime</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">systemToUTCTime</span></span><span class="hs-special">)</span><span>
+</span><span id="line-51"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Generics.Deriving.Base</span></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Generic</span></span><span class="hs-special">)</span><span>
+</span><span id="line-52"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Network.HTTP.Client</span></span><span>       </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">HttpException</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-53"></span><span>                                            </span><span class="annot"><span class="hs-identifier">HttpExceptionContent</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-54"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Network.Wreq</span></span><span>              </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">FormParam</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">checkResponse</span></span><span class="hs-special">,</span><span>
+</span><span id="line-55"></span><span>                                            </span><span class="annot"><span class="hs-identifier">defaults</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">getWith</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">postWith</span></span><span class="hs-special">,</span><span>
+</span><span id="line-56"></span><span>                                            </span><span class="annot"><span class="hs-identifier">responseBody</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">responseStatus</span></span><span class="hs-special">,</span><span>
+</span><span id="line-57"></span><span>                                            </span><span class="annot"><span class="hs-identifier">statusCode</span></span><span class="hs-special">)</span><span>
+</span><span id="line-58"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Network.Wreq.Types</span></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Options</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">ResponseChecker</span></span><span class="hs-special">)</span><span>
+</span><span id="line-59"></span><span>
+</span><span id="line-60"></span><span class="hs-comment">-- | EmergencyParams provides parameters necessary for sending an</span><span>
+</span><span id="line-61"></span><span class="hs-comment">-- emergency message.  See 'emergency' for a default emergency</span><span>
+</span><span id="line-62"></span><span class="hs-comment">-- PriorityLevel.</span><span>
+</span><span id="line-63"></span><span id="local-6989586621679139562"><span id="local-6989586621679139563"></span></span><span class="hs-keyword">data</span><span> </span><span id="EmergencyParams"><span class="annot"><a href="Network.API.Pushover.html#EmergencyParams"><span class="hs-identifier hs-var">EmergencyParams</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="EmergencyParams"><span class="annot"><a href="Network.API.Pushover.html#EmergencyParams"><span class="hs-identifier hs-var">EmergencyParams</span></a></span></span><span> </span><span class="hs-special">{</span><span>
+</span><span id="line-64"></span><span>  </span><span id="_retry"><span class="annot"><span class="annottext">EmergencyParams -&gt; Int
+</span><a href="Network.API.Pushover.html#_retry"><span class="hs-identifier hs-var hs-var">_retry</span></a></span></span><span>      </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-65"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="_expire"><span class="annot"><span class="annottext">EmergencyParams -&gt; Int
+</span><a href="Network.API.Pushover.html#_expire"><span class="hs-identifier hs-var hs-var">_expire</span></a></span></span><span>   </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-66"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="_callback"><span class="annot"><span class="annottext">EmergencyParams -&gt; Text
+</span><a href="Network.API.Pushover.html#_callback"><span class="hs-identifier hs-var hs-var">_callback</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span>
+</span><span id="line-67"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="_tags"><span class="annot"><span class="annottext">EmergencyParams -&gt; Text
+</span><a href="Network.API.Pushover.html#_tags"><span class="hs-identifier hs-var hs-var">_tags</span></a></span></span><span>     </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span>
+</span><span id="line-68"></span><span>  </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(forall x. EmergencyParams -&gt; Rep EmergencyParams x)
+-&gt; (forall x. Rep EmergencyParams x -&gt; EmergencyParams)
+-&gt; Generic EmergencyParams
+forall x. Rep EmergencyParams x -&gt; EmergencyParams
+forall x. EmergencyParams -&gt; Rep EmergencyParams x
+forall a.
+(forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
+$cto :: forall x. Rep EmergencyParams x -&gt; EmergencyParams
+$cfrom :: forall x. EmergencyParams -&gt; Rep EmergencyParams x
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">Generic</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679139548"><span id="local-6989586621679139550"><span id="local-6989586621679139552"><span class="annot"><span class="annottext">Int -&gt; EmergencyParams -&gt; ShowS
+[EmergencyParams] -&gt; ShowS
+EmergencyParams -&gt; String
+(Int -&gt; EmergencyParams -&gt; ShowS)
+-&gt; (EmergencyParams -&gt; String)
+-&gt; ([EmergencyParams] -&gt; ShowS)
+-&gt; Show EmergencyParams
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [EmergencyParams] -&gt; ShowS
+$cshowList :: [EmergencyParams] -&gt; ShowS
+show :: EmergencyParams -&gt; String
+$cshow :: EmergencyParams -&gt; String
+showsPrec :: Int -&gt; EmergencyParams -&gt; ShowS
+$cshowsPrec :: Int -&gt; EmergencyParams -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679139543"><span id="local-6989586621679139545"><span class="annot"><span class="annottext">EmergencyParams -&gt; EmergencyParams -&gt; Bool
+(EmergencyParams -&gt; EmergencyParams -&gt; Bool)
+-&gt; (EmergencyParams -&gt; EmergencyParams -&gt; Bool)
+-&gt; Eq EmergencyParams
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: EmergencyParams -&gt; EmergencyParams -&gt; Bool
+$c/= :: EmergencyParams -&gt; EmergencyParams -&gt; Bool
+== :: EmergencyParams -&gt; EmergencyParams -&gt; Bool
+$c== :: EmergencyParams -&gt; EmergencyParams -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-69"></span><span>
+</span><span id="line-70"></span><span id="tags"><span id="callback"><span id="expire"><span id="retry"><span class="hs-identifier">makeLenses</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">EmergencyParams</span></span></span></span></span><span>
+</span><span id="line-71"></span><span>
+</span><span id="line-72"></span><span class="hs-comment">-- | Priority levels for a notification.</span><span>
+</span><span id="line-73"></span><span id="local-6989586621679139540"><span id="local-6989586621679139541"></span></span><span class="hs-keyword">data</span><span> </span><span id="PriorityLevel"><span class="annot"><a href="Network.API.Pushover.html#PriorityLevel"><span class="hs-identifier hs-var">PriorityLevel</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="VeryLow"><span class="annot"><a href="Network.API.Pushover.html#VeryLow"><span class="hs-identifier hs-var">VeryLow</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Low"><span class="annot"><a href="Network.API.Pushover.html#Low"><span class="hs-identifier hs-var">Low</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Normal"><span class="annot"><a href="Network.API.Pushover.html#Normal"><span class="hs-identifier hs-var">Normal</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="High"><span class="annot"><a href="Network.API.Pushover.html#High"><span class="hs-identifier hs-var">High</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Emergency"><span class="annot"><a href="Network.API.Pushover.html#Emergency"><span class="hs-identifier hs-var">Emergency</span></a></span></span><span> </span><span class="annot"><a href="Network.API.Pushover.html#EmergencyParams"><span class="hs-identifier hs-type">EmergencyParams</span></a></span><span>
+</span><span id="line-74"></span><span>  </span><span class="hs-keyword">deriving</span><span class="hs-special">(</span><span class="annot"><span class="annottext">(forall x. PriorityLevel -&gt; Rep PriorityLevel x)
+-&gt; (forall x. Rep PriorityLevel x -&gt; PriorityLevel)
+-&gt; Generic PriorityLevel
+forall x. Rep PriorityLevel x -&gt; PriorityLevel
+forall x. PriorityLevel -&gt; Rep PriorityLevel x
+forall a.
+(forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
+$cto :: forall x. Rep PriorityLevel x -&gt; PriorityLevel
+$cfrom :: forall x. PriorityLevel -&gt; Rep PriorityLevel x
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">Generic</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679139529"><span id="local-6989586621679139531"><span class="annot"><span class="annottext">PriorityLevel -&gt; PriorityLevel -&gt; Bool
+(PriorityLevel -&gt; PriorityLevel -&gt; Bool)
+-&gt; (PriorityLevel -&gt; PriorityLevel -&gt; Bool) -&gt; Eq PriorityLevel
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: PriorityLevel -&gt; PriorityLevel -&gt; Bool
+$c/= :: PriorityLevel -&gt; PriorityLevel -&gt; Bool
+== :: PriorityLevel -&gt; PriorityLevel -&gt; Bool
+$c== :: PriorityLevel -&gt; PriorityLevel -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679139523"><span id="local-6989586621679139525"><span id="local-6989586621679139527"><span class="annot"><span class="annottext">Int -&gt; PriorityLevel -&gt; ShowS
+[PriorityLevel] -&gt; ShowS
+PriorityLevel -&gt; String
+(Int -&gt; PriorityLevel -&gt; ShowS)
+-&gt; (PriorityLevel -&gt; String)
+-&gt; ([PriorityLevel] -&gt; ShowS)
+-&gt; Show PriorityLevel
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [PriorityLevel] -&gt; ShowS
+$cshowList :: [PriorityLevel] -&gt; ShowS
+show :: PriorityLevel -&gt; String
+$cshow :: PriorityLevel -&gt; String
+showsPrec :: Int -&gt; PriorityLevel -&gt; ShowS
+$cshowsPrec :: Int -&gt; PriorityLevel -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-75"></span><span>
+</span><span id="line-76"></span><span class="hs-comment">-- | eparams gets or sets emergency parameters through a PriorityLevel</span><span>
+</span><span id="line-77"></span><span class="hs-comment">-- (which may or may not be an Emergency).</span><span>
+</span><span id="line-78"></span><span class="annot"><a href="Network.API.Pushover.html#eparams"><span class="hs-identifier hs-type">eparams</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Lens'</span></span><span> </span><span class="annot"><a href="Network.API.Pushover.html#PriorityLevel"><span class="hs-identifier hs-type">PriorityLevel</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="Network.API.Pushover.html#EmergencyParams"><span class="hs-identifier hs-type">EmergencyParams</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-79"></span><span id="eparams"><span class="annot"><span class="annottext">eparams :: (Maybe EmergencyParams -&gt; f (Maybe EmergencyParams))
+-&gt; PriorityLevel -&gt; f PriorityLevel
+</span><a href="Network.API.Pushover.html#eparams"><span class="hs-identifier hs-var hs-var">eparams</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(PriorityLevel -&gt; Maybe EmergencyParams)
+-&gt; (PriorityLevel -&gt; Maybe EmergencyParams -&gt; PriorityLevel)
+-&gt; Lens
+     PriorityLevel
+     PriorityLevel
+     (Maybe EmergencyParams)
+     (Maybe EmergencyParams)
+forall s a b t. (s -&gt; a) -&gt; (s -&gt; b -&gt; t) -&gt; Lens s t a b
+</span><span class="hs-identifier hs-var">lens</span></span><span> </span><span class="annot"><span class="annottext">PriorityLevel -&gt; Maybe EmergencyParams
+</span><a href="#local-6989586621679139521"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">PriorityLevel -&gt; Maybe EmergencyParams -&gt; PriorityLevel
+</span><a href="#local-6989586621679139520"><span class="hs-identifier hs-var">w</span></a></span><span>
+</span><span id="line-80"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-81"></span><span>    </span><span id="local-6989586621679139521"><span class="annot"><span class="annottext">r :: PriorityLevel -&gt; Maybe EmergencyParams
+</span><a href="#local-6989586621679139521"><span class="hs-identifier hs-var hs-var">r</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Network.API.Pushover.html#Emergency"><span class="hs-identifier hs-type">Emergency</span></a></span><span> </span><span id="local-6989586621679139519"><span class="annot"><span class="annottext">EmergencyParams
+</span><a href="#local-6989586621679139519"><span class="hs-identifier hs-var">p</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">EmergencyParams -&gt; Maybe EmergencyParams
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">EmergencyParams
+</span><a href="#local-6989586621679139519"><span class="hs-identifier hs-var">p</span></a></span><span>
+</span><span id="line-82"></span><span>    </span><span class="annot"><a href="#local-6989586621679139521"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">PriorityLevel
+</span><span class="hs-identifier">_</span></span><span>             </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe EmergencyParams
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-83"></span><span>
+</span><span id="line-84"></span><span>    </span><span id="local-6989586621679139520"><span class="annot"><span class="annottext">w :: PriorityLevel -&gt; Maybe EmergencyParams -&gt; PriorityLevel
+</span><a href="#local-6989586621679139520"><span class="hs-identifier hs-var hs-var">w</span></a></span></span><span> </span><span id="local-6989586621679139518"><span class="annot"><span class="annottext">PriorityLevel
+</span><a href="#local-6989586621679139518"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="annot"><span class="annottext">Maybe EmergencyParams
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>              </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PriorityLevel
+</span><a href="#local-6989586621679139518"><span class="hs-identifier hs-var">p</span></a></span><span>
+</span><span id="line-85"></span><span>    </span><span class="annot"><a href="#local-6989586621679139520"><span class="hs-identifier hs-var">w</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Network.API.Pushover.html#Emergency"><span class="hs-identifier hs-type">Emergency</span></a></span><span> </span><span class="annot"><span class="annottext">EmergencyParams
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679139517"><span class="annot"><span class="annottext">EmergencyParams
+</span><a href="#local-6989586621679139517"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">EmergencyParams -&gt; PriorityLevel
+</span><a href="Network.API.Pushover.html#Emergency"><span class="hs-identifier hs-var">Emergency</span></a></span><span> </span><span class="annot"><span class="annottext">(EmergencyParams -&gt; PriorityLevel)
+-&gt; EmergencyParams -&gt; PriorityLevel
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">EmergencyParams
+</span><a href="#local-6989586621679139517"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><span id="line-86"></span><span>    </span><span class="annot"><a href="#local-6989586621679139520"><span class="hs-identifier hs-var">w</span></a></span><span> </span><span id="local-6989586621679139516"><span class="annot"><span class="annottext">PriorityLevel
+</span><a href="#local-6989586621679139516"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="annot"><span class="annottext">Maybe EmergencyParams
+</span><span class="hs-identifier">_</span></span><span>                    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PriorityLevel
+</span><a href="#local-6989586621679139516"><span class="hs-identifier hs-var">p</span></a></span><span>
+</span><span id="line-87"></span><span>
+</span><span id="line-88"></span><span class="hs-comment">-- | An Emergency PriorityLevel with default EmergencyParams.</span><span>
+</span><span id="line-89"></span><span class="annot"><a href="Network.API.Pushover.html#emergency"><span class="hs-identifier hs-type">emergency</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#PriorityLevel"><span class="hs-identifier hs-type">PriorityLevel</span></a></span><span>
+</span><span id="line-90"></span><span id="emergency"><span class="annot"><span class="annottext">emergency :: PriorityLevel
+</span><a href="Network.API.Pushover.html#emergency"><span class="hs-identifier hs-var hs-var">emergency</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">EmergencyParams -&gt; PriorityLevel
+</span><a href="Network.API.Pushover.html#Emergency"><span class="hs-identifier hs-var">Emergency</span></a></span><span> </span><span class="annot"><span class="annottext">EmergencyParams :: Int -&gt; Int -&gt; Text -&gt; Text -&gt; EmergencyParams
+</span><a href="Network.API.Pushover.html#EmergencyParams"><span class="hs-identifier hs-type">EmergencyParams</span></a></span><span class="hs-special">{</span><span class="annot"><span class="annottext">_retry :: Int
+</span><a href="Network.API.Pushover.html#_retry"><span class="hs-identifier hs-var">_retry</span></a></span><span class="hs-glyph">=</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">300</span></span><span class="hs-special">,</span><span>  </span><span class="annot"><span class="annottext">_expire :: Int
+</span><a href="Network.API.Pushover.html#_expire"><span class="hs-identifier hs-var">_expire</span></a></span><span class="hs-glyph">=</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">3600</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">_callback :: Text
+</span><a href="Network.API.Pushover.html#_callback"><span class="hs-identifier hs-var">_callback</span></a></span><span class="hs-glyph">=</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">_tags :: Text
+</span><a href="Network.API.Pushover.html#_tags"><span class="hs-identifier hs-var">_tags</span></a></span><span class="hs-glyph">=</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;&quot;</span></span><span class="hs-special">}</span><span>
+</span><span id="line-91"></span><span>
+</span><span id="line-92"></span><span class="hs-keyword">data</span><span> </span><span id="Sound"><span class="annot"><a href="Network.API.Pushover.html#Sound"><span class="hs-identifier hs-var">Sound</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="None"><span class="annot"><a href="Network.API.Pushover.html#None"><span class="hs-identifier hs-var">None</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Bike"><span class="annot"><a href="Network.API.Pushover.html#Bike"><span class="hs-identifier hs-var">Bike</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Bugle"><span class="annot"><a href="Network.API.Pushover.html#Bugle"><span class="hs-identifier hs-var">Bugle</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="CashRegister"><span class="annot"><a href="Network.API.Pushover.html#CashRegister"><span class="hs-identifier hs-var">CashRegister</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Classical"><span class="annot"><a href="Network.API.Pushover.html#Classical"><span class="hs-identifier hs-var">Classical</span></a></span></span><span>
+</span><span id="line-93"></span><span>           </span><span class="hs-glyph">|</span><span> </span><span id="Cosmic"><span class="annot"><a href="Network.API.Pushover.html#Cosmic"><span class="hs-identifier hs-var">Cosmic</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Falling"><span class="annot"><a href="Network.API.Pushover.html#Falling"><span class="hs-identifier hs-var">Falling</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="GameLAN"><span class="annot"><a href="Network.API.Pushover.html#GameLAN"><span class="hs-identifier hs-var">GameLAN</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Incoming"><span class="annot"><a href="Network.API.Pushover.html#Incoming"><span class="hs-identifier hs-var">Incoming</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Intermission"><span class="annot"><a href="Network.API.Pushover.html#Intermission"><span class="hs-identifier hs-var">Intermission</span></a></span></span><span>
+</span><span id="line-94"></span><span>           </span><span class="hs-glyph">|</span><span> </span><span id="Magic"><span class="annot"><a href="Network.API.Pushover.html#Magic"><span class="hs-identifier hs-var">Magic</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Mechanical"><span class="annot"><a href="Network.API.Pushover.html#Mechanical"><span class="hs-identifier hs-var">Mechanical</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="PianoBar"><span class="annot"><a href="Network.API.Pushover.html#PianoBar"><span class="hs-identifier hs-var">PianoBar</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Siren"><span class="annot"><a href="Network.API.Pushover.html#Siren"><span class="hs-identifier hs-var">Siren</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="SpaceAlarm"><span class="annot"><a href="Network.API.Pushover.html#SpaceAlarm"><span class="hs-identifier hs-var">SpaceAlarm</span></a></span></span><span>
+</span><span id="line-95"></span><span>           </span><span class="hs-glyph">|</span><span> </span><span id="Tugboat"><span class="annot"><a href="Network.API.Pushover.html#Tugboat"><span class="hs-identifier hs-var">Tugboat</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Alien"><span class="annot"><a href="Network.API.Pushover.html#Alien"><span class="hs-identifier hs-var">Alien</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Climb"><span class="annot"><a href="Network.API.Pushover.html#Climb"><span class="hs-identifier hs-var">Climb</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Persistent"><span class="annot"><a href="Network.API.Pushover.html#Persistent"><span class="hs-identifier hs-var">Persistent</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Echo"><span class="annot"><a href="Network.API.Pushover.html#Echo"><span class="hs-identifier hs-var">Echo</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="UpDown"><span class="annot"><a href="Network.API.Pushover.html#UpDown"><span class="hs-identifier hs-var">UpDown</span></a></span></span><span>
+</span><span id="line-96"></span><span>           </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679139489"><span id="local-6989586621679139491"><span id="local-6989586621679139493"><span class="annot"><span class="annottext">Int -&gt; Sound -&gt; ShowS
+[Sound] -&gt; ShowS
+Sound -&gt; String
+(Int -&gt; Sound -&gt; ShowS)
+-&gt; (Sound -&gt; String) -&gt; ([Sound] -&gt; ShowS) -&gt; Show Sound
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [Sound] -&gt; ShowS
+$cshowList :: [Sound] -&gt; ShowS
+show :: Sound -&gt; String
+$cshow :: Sound -&gt; String
+showsPrec :: Int -&gt; Sound -&gt; ShowS
+$cshowsPrec :: Int -&gt; Sound -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679139485"><span id="local-6989586621679139487"><span class="annot"><span class="annottext">Sound -&gt; Sound -&gt; Bool
+(Sound -&gt; Sound -&gt; Bool) -&gt; (Sound -&gt; Sound -&gt; Bool) -&gt; Eq Sound
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: Sound -&gt; Sound -&gt; Bool
+$c/= :: Sound -&gt; Sound -&gt; Bool
+== :: Sound -&gt; Sound -&gt; Bool
+$c== :: Sound -&gt; Sound -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-97"></span><span>
+</span><span id="line-98"></span><span class="hs-comment">-- | A message to be sent via 'sendMessage'.</span><span>
+</span><span id="line-99"></span><span id="local-6989586621679139483"><span id="local-6989586621679139484"></span></span><span class="hs-keyword">data</span><span> </span><span id="Message"><span class="annot"><a href="Network.API.Pushover.html#Message"><span class="hs-identifier hs-var">Message</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Message"><span class="annot"><a href="Network.API.Pushover.html#Message"><span class="hs-identifier hs-var">Message</span></a></span></span><span> </span><span class="hs-special">{</span><span>
+</span><span id="line-100"></span><span>  </span><span id="_token"><span class="annot"><span class="annottext">Message -&gt; Text
+</span><a href="Network.API.Pushover.html#_token"><span class="hs-identifier hs-var hs-var">_token</span></a></span></span><span>        </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span>
+</span><span id="line-101"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="_user"><span class="annot"><span class="annottext">Message -&gt; Text
+</span><a href="Network.API.Pushover.html#_user"><span class="hs-identifier hs-var hs-var">_user</span></a></span></span><span>       </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span>
+</span><span id="line-102"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="_body"><span class="annot"><span class="annottext">Message -&gt; Text
+</span><a href="Network.API.Pushover.html#_body"><span class="hs-identifier hs-var hs-var">_body</span></a></span></span><span>       </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span>
+</span><span id="line-103"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="_attachment"><span class="annot"><span class="annottext">Message -&gt; ByteString
+</span><a href="Network.API.Pushover.html#_attachment"><span class="hs-identifier hs-var hs-var">_attachment</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.ByteString</span></span><span>
+</span><span id="line-104"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="_device"><span class="annot"><span class="annottext">Message -&gt; Text
+</span><a href="Network.API.Pushover.html#_device"><span class="hs-identifier hs-var hs-var">_device</span></a></span></span><span>     </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span>
+</span><span id="line-105"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="_title"><span class="annot"><span class="annottext">Message -&gt; Text
+</span><a href="Network.API.Pushover.html#_title"><span class="hs-identifier hs-var hs-var">_title</span></a></span></span><span>      </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span>
+</span><span id="line-106"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="_url"><span class="annot"><span class="annottext">Message -&gt; Text
+</span><a href="Network.API.Pushover.html#_url"><span class="hs-identifier hs-var hs-var">_url</span></a></span></span><span>        </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span>
+</span><span id="line-107"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="_urlTitle"><span class="annot"><span class="annottext">Message -&gt; Text
+</span><a href="Network.API.Pushover.html#_urlTitle"><span class="hs-identifier hs-var hs-var">_urlTitle</span></a></span></span><span>   </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span>
+</span><span id="line-108"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="_priority"><span class="annot"><span class="annottext">Message -&gt; PriorityLevel
+</span><a href="Network.API.Pushover.html#_priority"><span class="hs-identifier hs-var hs-var">_priority</span></a></span></span><span>   </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#PriorityLevel"><span class="hs-identifier hs-type">PriorityLevel</span></a></span><span>
+</span><span id="line-109"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="_sound"><span class="annot"><span class="annottext">Message -&gt; Sound
+</span><a href="Network.API.Pushover.html#_sound"><span class="hs-identifier hs-var hs-var">_sound</span></a></span></span><span>      </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#Sound"><span class="hs-identifier hs-type">Sound</span></a></span><span>
+</span><span id="line-110"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="_timestamp"><span class="annot"><span class="annottext">Message -&gt; Maybe UTCTime
+</span><a href="Network.API.Pushover.html#_timestamp"><span class="hs-identifier hs-var hs-var">_timestamp</span></a></span></span><span>  </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">UTCTime</span></span><span>
+</span><span id="line-111"></span><span>  </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span>  </span><span class="hs-special">(</span><span id="local-6989586621679139465"><span id="local-6989586621679139467"><span id="local-6989586621679139469"><span class="annot"><span class="annottext">Int -&gt; Message -&gt; ShowS
+[Message] -&gt; ShowS
+Message -&gt; String
+(Int -&gt; Message -&gt; ShowS)
+-&gt; (Message -&gt; String) -&gt; ([Message] -&gt; ShowS) -&gt; Show Message
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [Message] -&gt; ShowS
+$cshowList :: [Message] -&gt; ShowS
+show :: Message -&gt; String
+$cshow :: Message -&gt; String
+showsPrec :: Int -&gt; Message -&gt; ShowS
+$cshowsPrec :: Int -&gt; Message -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">(forall x. Message -&gt; Rep Message x)
+-&gt; (forall x. Rep Message x -&gt; Message) -&gt; Generic Message
+forall x. Rep Message x -&gt; Message
+forall x. Message -&gt; Rep Message x
+forall a.
+(forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
+$cto :: forall x. Rep Message x -&gt; Message
+$cfrom :: forall x. Message -&gt; Rep Message x
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">Generic</span></span><span class="hs-special">)</span><span>
+</span><span id="line-112"></span><span>
+</span><span id="line-113"></span><span id="timestamp"><span id="sound"><span id="priority"><span id="urlTitle"><span id="url"><span id="title"><span id="device"><span id="attachment"><span id="body"><span id="user"><span id="token"><span class="hs-identifier">makeLenses</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">Message</span></span></span></span></span></span></span></span></span></span></span></span><span>
+</span><span id="line-114"></span><span>
+</span><span id="line-115"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Default</span></span><span> </span><span class="annot"><a href="Network.API.Pushover.html#Message"><span class="hs-identifier hs-type">Message</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-116"></span><span>  </span><span id="local-6989586621679139459"><span class="annot"><span class="annottext">def :: Message
+</span><a href="#local-6989586621679139459"><span class="hs-identifier hs-var hs-var hs-var hs-var">def</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message :: Text
+-&gt; Text
+-&gt; Text
+-&gt; ByteString
+-&gt; Text
+-&gt; Text
+-&gt; Text
+-&gt; Text
+-&gt; PriorityLevel
+-&gt; Sound
+-&gt; Maybe UTCTime
+-&gt; Message
+</span><a href="Network.API.Pushover.html#Message"><span class="hs-identifier hs-type">Message</span></a></span><span class="hs-special">{</span><span>
+</span><span id="line-117"></span><span>    </span><span class="annot"><span class="annottext">_token :: Text
+</span><a href="Network.API.Pushover.html#_token"><span class="hs-identifier hs-var">_token</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-118"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">_user :: Text
+</span><a href="Network.API.Pushover.html#_user"><span class="hs-identifier hs-var">_user</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-119"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">_body :: Text
+</span><a href="Network.API.Pushover.html#_body"><span class="hs-identifier hs-var">_body</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-120"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">_attachment :: ByteString
+</span><a href="Network.API.Pushover.html#_attachment"><span class="hs-identifier hs-var">_attachment</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-121"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">_device :: Text
+</span><a href="Network.API.Pushover.html#_device"><span class="hs-identifier hs-var">_device</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-122"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">_title :: Text
+</span><a href="Network.API.Pushover.html#_title"><span class="hs-identifier hs-var">_title</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-123"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">_url :: Text
+</span><a href="Network.API.Pushover.html#_url"><span class="hs-identifier hs-var">_url</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-124"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">_urlTitle :: Text
+</span><a href="Network.API.Pushover.html#_urlTitle"><span class="hs-identifier hs-var">_urlTitle</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-125"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">_priority :: PriorityLevel
+</span><a href="Network.API.Pushover.html#_priority"><span class="hs-identifier hs-var">_priority</span></a></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PriorityLevel
+</span><a href="Network.API.Pushover.html#Normal"><span class="hs-identifier hs-var">Normal</span></a></span><span>
+</span><span id="line-126"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">_sound :: Sound
+</span><a href="Network.API.Pushover.html#_sound"><span class="hs-identifier hs-var">_sound</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sound
+</span><a href="Network.API.Pushover.html#None"><span class="hs-identifier hs-var">None</span></a></span><span>
+</span><span id="line-127"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">_timestamp :: Maybe UTCTime
+</span><a href="Network.API.Pushover.html#_timestamp"><span class="hs-identifier hs-var">_timestamp</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe UTCTime
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-128"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-129"></span><span>
+</span><span id="line-130"></span><span class="annot"><a href="Network.API.Pushover.html#params"><span class="hs-identifier hs-type">params</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#Message"><span class="hs-identifier hs-type">Message</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">FormParam</span></span><span class="hs-special">]</span><span>
+</span><span id="line-131"></span><span id="params"><span class="annot"><span class="annottext">params :: Message -&gt; [FormParam]
+</span><a href="Network.API.Pushover.html#params"><span class="hs-identifier hs-var hs-var">params</span></a></span></span><span> </span><span id="local-6989586621679139457"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679139457"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span>
+</span><span id="line-132"></span><span>  </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;token&quot;</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Text -&gt; FormParam
+forall v. FormValue v =&gt; ByteString -&gt; v -&gt; FormParam
+</span><span class="hs-operator hs-var">:=</span></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679139457"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Message -&gt; Getting Text Message Text -&gt; Text
+forall s a. s -&gt; Getting a s a -&gt; a
+</span><span class="hs-operator hs-var">^.</span></span><span> </span><span class="annot"><span class="annottext">Getting Text Message Text
+Lens' Message Text
+</span><a href="Network.API.Pushover.html#token"><span class="hs-identifier hs-var">token</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-133"></span><span>  </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;user&quot;</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Text -&gt; FormParam
+forall v. FormValue v =&gt; ByteString -&gt; v -&gt; FormParam
+</span><span class="hs-operator hs-var">:=</span></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679139457"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Message -&gt; Getting Text Message Text -&gt; Text
+forall s a. s -&gt; Getting a s a -&gt; a
+</span><span class="hs-operator hs-var">^.</span></span><span> </span><span class="annot"><span class="annottext">Getting Text Message Text
+Lens' Message Text
+</span><a href="Network.API.Pushover.html#user"><span class="hs-identifier hs-var">user</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-134"></span><span>  </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;message&quot;</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Text -&gt; FormParam
+forall v. FormValue v =&gt; ByteString -&gt; v -&gt; FormParam
+</span><span class="hs-operator hs-var">:=</span></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679139457"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Message -&gt; Getting Text Message Text -&gt; Text
+forall s a. s -&gt; Getting a s a -&gt; a
+</span><span class="hs-operator hs-var">^.</span></span><span> </span><span class="annot"><span class="annottext">Getting Text Message Text
+Lens' Message Text
+</span><a href="Network.API.Pushover.html#body"><span class="hs-identifier hs-var">body</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-135"></span><span>  </span><span class="hs-comment">-- TODO: attachment</span><span>
+</span><span id="line-136"></span><span>  </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;device&quot;</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Text -&gt; FormParam
+forall v. FormValue v =&gt; ByteString -&gt; v -&gt; FormParam
+</span><span class="hs-operator hs-var">:=</span></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679139457"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Message -&gt; Getting Text Message Text -&gt; Text
+forall s a. s -&gt; Getting a s a -&gt; a
+</span><span class="hs-operator hs-var">^.</span></span><span> </span><span class="annot"><span class="annottext">Getting Text Message Text
+Lens' Message Text
+</span><a href="Network.API.Pushover.html#device"><span class="hs-identifier hs-var">device</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-137"></span><span>  </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;title&quot;</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Text -&gt; FormParam
+forall v. FormValue v =&gt; ByteString -&gt; v -&gt; FormParam
+</span><span class="hs-operator hs-var">:=</span></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679139457"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Message -&gt; Getting Text Message Text -&gt; Text
+forall s a. s -&gt; Getting a s a -&gt; a
+</span><span class="hs-operator hs-var">^.</span></span><span> </span><span class="annot"><span class="annottext">Getting Text Message Text
+Lens' Message Text
+</span><a href="Network.API.Pushover.html#title"><span class="hs-identifier hs-var">title</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-138"></span><span>  </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;url&quot;</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Text -&gt; FormParam
+forall v. FormValue v =&gt; ByteString -&gt; v -&gt; FormParam
+</span><span class="hs-operator hs-var">:=</span></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679139457"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Message -&gt; Getting Text Message Text -&gt; Text
+forall s a. s -&gt; Getting a s a -&gt; a
+</span><span class="hs-operator hs-var">^.</span></span><span> </span><span class="annot"><span class="annottext">Getting Text Message Text
+Lens' Message Text
+</span><a href="Network.API.Pushover.html#url"><span class="hs-identifier hs-var">url</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-139"></span><span>  </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;url_title&quot;</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Text -&gt; FormParam
+forall v. FormValue v =&gt; ByteString -&gt; v -&gt; FormParam
+</span><span class="hs-operator hs-var">:=</span></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679139457"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Message -&gt; Getting Text Message Text -&gt; Text
+forall s a. s -&gt; Getting a s a -&gt; a
+</span><span class="hs-operator hs-var">^.</span></span><span> </span><span class="annot"><span class="annottext">Getting Text Message Text
+Lens' Message Text
+</span><a href="Network.API.Pushover.html#urlTitle"><span class="hs-identifier hs-var">urlTitle</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-140"></span><span>  </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;sound&quot;</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Text -&gt; FormParam
+forall v. FormValue v =&gt; ByteString -&gt; v -&gt; FormParam
+</span><span class="hs-operator hs-var">:=</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; Text
+</span><span class="hs-identifier hs-var">toLower</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Text) -&gt; (Sound -&gt; Text) -&gt; Sound -&gt; Text
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Text
+</span><span class="hs-identifier hs-var">pack</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Text) -&gt; (Sound -&gt; String) -&gt; Sound -&gt; Text
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Sound -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">(Sound -&gt; Text) -&gt; Sound -&gt; Text
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679139457"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Message -&gt; Getting Sound Message Sound -&gt; Sound
+forall s a. s -&gt; Getting a s a -&gt; a
+</span><span class="hs-operator hs-var">^.</span></span><span> </span><span class="annot"><span class="annottext">Getting Sound Message Sound
+Lens' Message Sound
+</span><a href="Network.API.Pushover.html#sound"><span class="hs-identifier hs-var">sound</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-141"></span><span>  </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;priority&quot;</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Int -&gt; FormParam
+forall v. FormValue v =&gt; ByteString -&gt; v -&gt; FormParam
+</span><span class="hs-operator hs-var">:=</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PriorityLevel -&gt; Int
+</span><a href="#local-6989586621679139452"><span class="hs-identifier hs-var">pval</span></a></span><span> </span><span class="annot"><span class="annottext">(PriorityLevel -&gt; Int) -&gt; PriorityLevel -&gt; Int
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679139457"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Message
+-&gt; Getting PriorityLevel Message PriorityLevel -&gt; PriorityLevel
+forall s a. s -&gt; Getting a s a -&gt; a
+</span><span class="hs-operator hs-var">^.</span></span><span> </span><span class="annot"><span class="annottext">Getting PriorityLevel Message PriorityLevel
+Lens' Message PriorityLevel
+</span><a href="Network.API.Pushover.html#priority"><span class="hs-identifier hs-var">priority</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-142"></span><span>  </span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[FormParam] -&gt; [FormParam] -&gt; [FormParam]
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Maybe UTCTime -&gt; [FormParam]
+</span><a href="#local-6989586621679139451"><span class="hs-identifier hs-var">utcToP</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679139457"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Message
+-&gt; Getting (Maybe UTCTime) Message (Maybe UTCTime) -&gt; Maybe UTCTime
+forall s a. s -&gt; Getting a s a -&gt; a
+</span><span class="hs-operator hs-var">^.</span></span><span> </span><span class="annot"><span class="annottext">Getting (Maybe UTCTime) Message (Maybe UTCTime)
+Lens' Message (Maybe UTCTime)
+</span><a href="Network.API.Pushover.html#timestamp"><span class="hs-identifier hs-var">timestamp</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-143"></span><span>  </span><span class="annot"><span class="annottext">[FormParam] -&gt; [FormParam] -&gt; [FormParam]
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">PriorityLevel -&gt; [FormParam]
+</span><a href="#local-6989586621679139450"><span class="hs-identifier hs-var">pparams</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679139457"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Message
+-&gt; Getting PriorityLevel Message PriorityLevel -&gt; PriorityLevel
+forall s a. s -&gt; Getting a s a -&gt; a
+</span><span class="hs-operator hs-var">^.</span></span><span> </span><span class="annot"><span class="annottext">Getting PriorityLevel Message PriorityLevel
+Lens' Message PriorityLevel
+</span><a href="Network.API.Pushover.html#priority"><span class="hs-identifier hs-var">priority</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-144"></span><span>
+</span><span id="line-145"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-146"></span><span>    </span><span id="local-6989586621679139451"><span class="annot"><span class="annottext">utcToP :: Maybe UTCTime -&gt; [FormParam]
+</span><a href="#local-6989586621679139451"><span class="hs-identifier hs-var hs-var">utcToP</span></a></span></span><span> </span><span class="annot"><span class="annottext">Maybe UTCTime
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-147"></span><span>    </span><span class="annot"><a href="#local-6989586621679139451"><span class="hs-identifier hs-var">utcToP</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679139449"><span class="annot"><span class="annottext">UTCTime
+</span><a href="#local-6989586621679139449"><span class="hs-identifier hs-var">t</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;timestamp&quot;</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; String -&gt; FormParam
+forall v. FormValue v =&gt; ByteString -&gt; v -&gt; FormParam
+</span><span class="hs-operator hs-var">:=</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; String) -&gt; (UTCTime -&gt; Int) -&gt; UTCTime -&gt; String
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Double -&gt; Int
+forall a. Enum a =&gt; a -&gt; Int
+</span><span class="hs-identifier hs-var">fromEnum</span></span><span> </span><span class="annot"><span class="annottext">(Double -&gt; Int) -&gt; (UTCTime -&gt; Double) -&gt; UTCTime -&gt; Int
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">POSIXTime -&gt; Double
+forall a b. (Real a, Fractional b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">realToFrac</span></span><span> </span><span class="annot"><span class="annottext">(POSIXTime -&gt; Double)
+-&gt; (UTCTime -&gt; POSIXTime) -&gt; UTCTime -&gt; Double
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">UTCTime -&gt; POSIXTime
+</span><span class="hs-identifier hs-var">utcTimeToPOSIXSeconds</span></span><span> </span><span class="annot"><span class="annottext">(UTCTime -&gt; String) -&gt; UTCTime -&gt; String
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">UTCTime
+</span><a href="#local-6989586621679139449"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span>
+</span><span id="line-148"></span><span>
+</span><span id="line-149"></span><span>    </span><span id="local-6989586621679139450"><span class="annot"><span class="annottext">pparams :: PriorityLevel -&gt; [FormParam]
+</span><a href="#local-6989586621679139450"><span class="hs-identifier hs-var hs-var">pparams</span></a></span></span><span> </span><span id="local-6989586621679139447"><span class="annot"><span class="annottext">p :: PriorityLevel
+</span><a href="#local-6989586621679139447"><span class="hs-identifier hs-var">p</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Network.API.Pushover.html#Emergency"><span class="hs-identifier hs-type">Emergency</span></a></span><span> </span><span class="annot"><span class="annottext">EmergencyParams
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;retry&quot;</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Maybe Int -&gt; FormParam
+forall v. FormValue v =&gt; ByteString -&gt; v -&gt; FormParam
+</span><span class="hs-operator hs-var">:=</span></span><span> </span><span class="annot"><span class="annottext">PriorityLevel
+</span><a href="#local-6989586621679139447"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">PriorityLevel -&gt; Getting (First Int) PriorityLevel Int -&gt; Maybe Int
+forall s a. s -&gt; Getting (First a) s a -&gt; Maybe a
+</span><span class="hs-operator hs-var">^?</span></span><span> </span><span class="annot"><span class="annottext">(Maybe EmergencyParams
+ -&gt; Const (First Int) (Maybe EmergencyParams))
+-&gt; PriorityLevel -&gt; Const (First Int) PriorityLevel
+Lens
+  PriorityLevel
+  PriorityLevel
+  (Maybe EmergencyParams)
+  (Maybe EmergencyParams)
+</span><a href="Network.API.Pushover.html#eparams"><span class="hs-identifier hs-var">eparams</span></a></span><span class="annot"><span class="annottext">((Maybe EmergencyParams
+  -&gt; Const (First Int) (Maybe EmergencyParams))
+ -&gt; PriorityLevel -&gt; Const (First Int) PriorityLevel)
+-&gt; ((Int -&gt; Const (First Int) Int)
+    -&gt; Maybe EmergencyParams
+    -&gt; Const (First Int) (Maybe EmergencyParams))
+-&gt; Getting (First Int) PriorityLevel Int
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span class="annot"><span class="annottext">(EmergencyParams -&gt; Const (First Int) EmergencyParams)
+-&gt; Maybe EmergencyParams
+-&gt; Const (First Int) (Maybe EmergencyParams)
+forall a b. Prism (Maybe a) (Maybe b) a b
+</span><span class="hs-identifier hs-var">_Just</span></span><span class="annot"><span class="annottext">((EmergencyParams -&gt; Const (First Int) EmergencyParams)
+ -&gt; Maybe EmergencyParams
+ -&gt; Const (First Int) (Maybe EmergencyParams))
+-&gt; ((Int -&gt; Const (First Int) Int)
+    -&gt; EmergencyParams -&gt; Const (First Int) EmergencyParams)
+-&gt; (Int -&gt; Const (First Int) Int)
+-&gt; Maybe EmergencyParams
+-&gt; Const (First Int) (Maybe EmergencyParams)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span class="annot"><span class="annottext">(Int -&gt; Const (First Int) Int)
+-&gt; EmergencyParams -&gt; Const (First Int) EmergencyParams
+Lens' EmergencyParams Int
+</span><a href="Network.API.Pushover.html#retry"><span class="hs-identifier hs-var">retry</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-150"></span><span>                               </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;expire&quot;</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Maybe Int -&gt; FormParam
+forall v. FormValue v =&gt; ByteString -&gt; v -&gt; FormParam
+</span><span class="hs-operator hs-var">:=</span></span><span> </span><span class="annot"><span class="annottext">PriorityLevel
+</span><a href="#local-6989586621679139447"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">PriorityLevel -&gt; Getting (First Int) PriorityLevel Int -&gt; Maybe Int
+forall s a. s -&gt; Getting (First a) s a -&gt; Maybe a
+</span><span class="hs-operator hs-var">^?</span></span><span> </span><span class="annot"><span class="annottext">(Maybe EmergencyParams
+ -&gt; Const (First Int) (Maybe EmergencyParams))
+-&gt; PriorityLevel -&gt; Const (First Int) PriorityLevel
+Lens
+  PriorityLevel
+  PriorityLevel
+  (Maybe EmergencyParams)
+  (Maybe EmergencyParams)
+</span><a href="Network.API.Pushover.html#eparams"><span class="hs-identifier hs-var">eparams</span></a></span><span class="annot"><span class="annottext">((Maybe EmergencyParams
+  -&gt; Const (First Int) (Maybe EmergencyParams))
+ -&gt; PriorityLevel -&gt; Const (First Int) PriorityLevel)
+-&gt; ((Int -&gt; Const (First Int) Int)
+    -&gt; Maybe EmergencyParams
+    -&gt; Const (First Int) (Maybe EmergencyParams))
+-&gt; Getting (First Int) PriorityLevel Int
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span class="annot"><span class="annottext">(EmergencyParams -&gt; Const (First Int) EmergencyParams)
+-&gt; Maybe EmergencyParams
+-&gt; Const (First Int) (Maybe EmergencyParams)
+forall a b. Prism (Maybe a) (Maybe b) a b
+</span><span class="hs-identifier hs-var">_Just</span></span><span class="annot"><span class="annottext">((EmergencyParams -&gt; Const (First Int) EmergencyParams)
+ -&gt; Maybe EmergencyParams
+ -&gt; Const (First Int) (Maybe EmergencyParams))
+-&gt; ((Int -&gt; Const (First Int) Int)
+    -&gt; EmergencyParams -&gt; Const (First Int) EmergencyParams)
+-&gt; (Int -&gt; Const (First Int) Int)
+-&gt; Maybe EmergencyParams
+-&gt; Const (First Int) (Maybe EmergencyParams)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span class="annot"><span class="annottext">(Int -&gt; Const (First Int) Int)
+-&gt; EmergencyParams -&gt; Const (First Int) EmergencyParams
+Lens' EmergencyParams Int
+</span><a href="Network.API.Pushover.html#expire"><span class="hs-identifier hs-var">expire</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-151"></span><span>                               </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;callback&quot;</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Maybe Text -&gt; FormParam
+forall v. FormValue v =&gt; ByteString -&gt; v -&gt; FormParam
+</span><span class="hs-operator hs-var">:=</span></span><span> </span><span class="annot"><span class="annottext">PriorityLevel
+</span><a href="#local-6989586621679139447"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">PriorityLevel
+-&gt; Getting (First Text) PriorityLevel Text -&gt; Maybe Text
+forall s a. s -&gt; Getting (First a) s a -&gt; Maybe a
+</span><span class="hs-operator hs-var">^?</span></span><span> </span><span class="annot"><span class="annottext">(Maybe EmergencyParams
+ -&gt; Const (First Text) (Maybe EmergencyParams))
+-&gt; PriorityLevel -&gt; Const (First Text) PriorityLevel
+Lens
+  PriorityLevel
+  PriorityLevel
+  (Maybe EmergencyParams)
+  (Maybe EmergencyParams)
+</span><a href="Network.API.Pushover.html#eparams"><span class="hs-identifier hs-var">eparams</span></a></span><span class="annot"><span class="annottext">((Maybe EmergencyParams
+  -&gt; Const (First Text) (Maybe EmergencyParams))
+ -&gt; PriorityLevel -&gt; Const (First Text) PriorityLevel)
+-&gt; ((Text -&gt; Const (First Text) Text)
+    -&gt; Maybe EmergencyParams
+    -&gt; Const (First Text) (Maybe EmergencyParams))
+-&gt; Getting (First Text) PriorityLevel Text
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span class="annot"><span class="annottext">(EmergencyParams -&gt; Const (First Text) EmergencyParams)
+-&gt; Maybe EmergencyParams
+-&gt; Const (First Text) (Maybe EmergencyParams)
+forall a b. Prism (Maybe a) (Maybe b) a b
+</span><span class="hs-identifier hs-var">_Just</span></span><span class="annot"><span class="annottext">((EmergencyParams -&gt; Const (First Text) EmergencyParams)
+ -&gt; Maybe EmergencyParams
+ -&gt; Const (First Text) (Maybe EmergencyParams))
+-&gt; ((Text -&gt; Const (First Text) Text)
+    -&gt; EmergencyParams -&gt; Const (First Text) EmergencyParams)
+-&gt; (Text -&gt; Const (First Text) Text)
+-&gt; Maybe EmergencyParams
+-&gt; Const (First Text) (Maybe EmergencyParams)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span class="annot"><span class="annottext">(Text -&gt; Const (First Text) Text)
+-&gt; EmergencyParams -&gt; Const (First Text) EmergencyParams
+Lens' EmergencyParams Text
+</span><a href="Network.API.Pushover.html#callback"><span class="hs-identifier hs-var">callback</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-152"></span><span>                               </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;tags&quot;</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Maybe Text -&gt; FormParam
+forall v. FormValue v =&gt; ByteString -&gt; v -&gt; FormParam
+</span><span class="hs-operator hs-var">:=</span></span><span> </span><span class="annot"><span class="annottext">PriorityLevel
+</span><a href="#local-6989586621679139447"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">PriorityLevel
+-&gt; Getting (First Text) PriorityLevel Text -&gt; Maybe Text
+forall s a. s -&gt; Getting (First a) s a -&gt; Maybe a
+</span><span class="hs-operator hs-var">^?</span></span><span> </span><span class="annot"><span class="annottext">(Maybe EmergencyParams
+ -&gt; Const (First Text) (Maybe EmergencyParams))
+-&gt; PriorityLevel -&gt; Const (First Text) PriorityLevel
+Lens
+  PriorityLevel
+  PriorityLevel
+  (Maybe EmergencyParams)
+  (Maybe EmergencyParams)
+</span><a href="Network.API.Pushover.html#eparams"><span class="hs-identifier hs-var">eparams</span></a></span><span class="annot"><span class="annottext">((Maybe EmergencyParams
+  -&gt; Const (First Text) (Maybe EmergencyParams))
+ -&gt; PriorityLevel -&gt; Const (First Text) PriorityLevel)
+-&gt; ((Text -&gt; Const (First Text) Text)
+    -&gt; Maybe EmergencyParams
+    -&gt; Const (First Text) (Maybe EmergencyParams))
+-&gt; Getting (First Text) PriorityLevel Text
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span class="annot"><span class="annottext">(EmergencyParams -&gt; Const (First Text) EmergencyParams)
+-&gt; Maybe EmergencyParams
+-&gt; Const (First Text) (Maybe EmergencyParams)
+forall a b. Prism (Maybe a) (Maybe b) a b
+</span><span class="hs-identifier hs-var">_Just</span></span><span class="annot"><span class="annottext">((EmergencyParams -&gt; Const (First Text) EmergencyParams)
+ -&gt; Maybe EmergencyParams
+ -&gt; Const (First Text) (Maybe EmergencyParams))
+-&gt; ((Text -&gt; Const (First Text) Text)
+    -&gt; EmergencyParams -&gt; Const (First Text) EmergencyParams)
+-&gt; (Text -&gt; Const (First Text) Text)
+-&gt; Maybe EmergencyParams
+-&gt; Const (First Text) (Maybe EmergencyParams)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span class="annot"><span class="annottext">(Text -&gt; Const (First Text) Text)
+-&gt; EmergencyParams -&gt; Const (First Text) EmergencyParams
+Lens' EmergencyParams Text
+</span><a href="Network.API.Pushover.html#tags"><span class="hs-identifier hs-var">tags</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-153"></span><span>    </span><span class="annot"><a href="#local-6989586621679139450"><span class="hs-identifier hs-var">pparams</span></a></span><span> </span><span class="annot"><span class="annottext">PriorityLevel
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-154"></span><span>
+</span><span id="line-155"></span><span>    </span><span class="annot"><a href="#local-6989586621679139452"><span class="hs-identifier hs-type">pval</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#PriorityLevel"><span class="hs-identifier hs-type">PriorityLevel</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-156"></span><span>    </span><span id="local-6989586621679139452"><span class="annot"><span class="annottext">pval :: PriorityLevel -&gt; Int
+</span><a href="#local-6989586621679139452"><span class="hs-identifier hs-var hs-var">pval</span></a></span></span><span> </span><span class="annot"><span class="annottext">PriorityLevel
+</span><a href="Network.API.Pushover.html#VeryLow"><span class="hs-identifier hs-var">VeryLow</span></a></span><span>       </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">-</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">2</span></span><span>
+</span><span id="line-157"></span><span>    </span><span class="annot"><a href="#local-6989586621679139452"><span class="hs-identifier hs-var">pval</span></a></span><span> </span><span class="annot"><span class="annottext">PriorityLevel
+</span><a href="Network.API.Pushover.html#Low"><span class="hs-identifier hs-var">Low</span></a></span><span>           </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">-</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span>
+</span><span id="line-158"></span><span>    </span><span class="annot"><a href="#local-6989586621679139452"><span class="hs-identifier hs-var">pval</span></a></span><span> </span><span class="annot"><span class="annottext">PriorityLevel
+</span><a href="Network.API.Pushover.html#Normal"><span class="hs-identifier hs-var">Normal</span></a></span><span>        </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-159"></span><span>    </span><span class="annot"><a href="#local-6989586621679139452"><span class="hs-identifier hs-var">pval</span></a></span><span> </span><span class="annot"><span class="annottext">PriorityLevel
+</span><a href="Network.API.Pushover.html#High"><span class="hs-identifier hs-var">High</span></a></span><span>          </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span>
+</span><span id="line-160"></span><span>    </span><span class="annot"><a href="#local-6989586621679139452"><span class="hs-identifier hs-var">pval</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Network.API.Pushover.html#Emergency"><span class="hs-identifier hs-type">Emergency</span></a></span><span> </span><span class="annot"><span class="annottext">EmergencyParams
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">2</span></span><span>
+</span><span id="line-161"></span><span>
+</span><span id="line-162"></span><span class="hs-comment">-- | Build a message with defaults given an API Token, User ID, and initial message.</span><span>
+</span><span id="line-163"></span><span class="annot"><a href="Network.API.Pushover.html#message"><span class="hs-identifier hs-type">message</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>  </span><span class="annot"><a href="Network.API.Pushover.html#Message"><span class="hs-identifier hs-type">Message</span></a></span><span>
+</span><span id="line-164"></span><span id="message"><span class="annot"><span class="annottext">message :: Text -&gt; Text -&gt; Text -&gt; Message
+</span><a href="Network.API.Pushover.html#message"><span class="hs-identifier hs-var hs-var">message</span></a></span></span><span> </span><span id="local-6989586621679139444"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679139444"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span id="local-6989586621679139443"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679139443"><span class="hs-identifier hs-var">u</span></a></span></span><span> </span><span id="local-6989586621679139442"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679139442"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Message
+forall a. Default a =&gt; a
+</span><span class="hs-identifier hs-var">def</span></span><span class="hs-special">{</span><span class="annot"><span class="annottext">_token :: Text
+</span><a href="Network.API.Pushover.html#_token"><span class="hs-identifier hs-var">_token</span></a></span><span class="hs-glyph">=</span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679139444"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">_user :: Text
+</span><a href="Network.API.Pushover.html#_user"><span class="hs-identifier hs-var">_user</span></a></span><span class="hs-glyph">=</span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679139443"><span class="hs-identifier hs-var">u</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">_body :: Text
+</span><a href="Network.API.Pushover.html#_body"><span class="hs-identifier hs-var">_body</span></a></span><span class="hs-glyph">=</span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679139442"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">}</span><span>
+</span><span id="line-165"></span><span>
+</span><span id="line-166"></span><span class="hs-comment">-- | The response to a 'sendMessage' request.</span><span>
+</span><span id="line-167"></span><span class="hs-keyword">data</span><span> </span><span id="Response"><span class="annot"><a href="Network.API.Pushover.html#Response"><span class="hs-identifier hs-var">Response</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Response"><span class="annot"><a href="Network.API.Pushover.html#Response"><span class="hs-identifier hs-var">Response</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="_status"><span class="annot"><span class="annottext">Response -&gt; Int
+</span><a href="Network.API.Pushover.html#_status"><span class="hs-identifier hs-var hs-var">_status</span></a></span></span><span>  </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-168"></span><span>                         </span><span class="hs-special">,</span><span> </span><span id="_request"><span class="annot"><span class="annottext">Response -&gt; Text
+</span><a href="Network.API.Pushover.html#_request"><span class="hs-identifier hs-var hs-var">_request</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span>
+</span><span id="line-169"></span><span>                         </span><span class="hs-special">,</span><span> </span><span id="_receipt"><span class="annot"><span class="annottext">Response -&gt; Text
+</span><a href="Network.API.Pushover.html#_receipt"><span class="hs-identifier hs-var hs-var">_receipt</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span>
+</span><span id="line-170"></span><span>                         </span><span class="hs-special">,</span><span> </span><span id="_errors"><span class="annot"><span class="annottext">Response -&gt; [Text]
+</span><a href="Network.API.Pushover.html#_errors"><span class="hs-identifier hs-var hs-var">_errors</span></a></span></span><span>  </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span class="hs-special">]</span><span>
+</span><span id="line-171"></span><span>                         </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679139431"><span id="local-6989586621679139433"><span id="local-6989586621679139435"><span class="annot"><span class="annottext">Int -&gt; Response -&gt; ShowS
+[Response] -&gt; ShowS
+Response -&gt; String
+(Int -&gt; Response -&gt; ShowS)
+-&gt; (Response -&gt; String) -&gt; ([Response] -&gt; ShowS) -&gt; Show Response
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [Response] -&gt; ShowS
+$cshowList :: [Response] -&gt; ShowS
+show :: Response -&gt; String
+$cshow :: Response -&gt; String
+showsPrec :: Int -&gt; Response -&gt; ShowS
+$cshowsPrec :: Int -&gt; Response -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679139427"><span id="local-6989586621679139429"><span class="annot"><span class="annottext">Response -&gt; Response -&gt; Bool
+(Response -&gt; Response -&gt; Bool)
+-&gt; (Response -&gt; Response -&gt; Bool) -&gt; Eq Response
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: Response -&gt; Response -&gt; Bool
+$c/= :: Response -&gt; Response -&gt; Bool
+== :: Response -&gt; Response -&gt; Bool
+$c== :: Response -&gt; Response -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-172"></span><span>
+</span><span id="line-173"></span><span id="errors"><span id="receipt"><span id="request"><span id="status"><span class="hs-identifier">makeLenses</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">Response</span></span></span></span></span><span>
+</span><span id="line-174"></span><span>
+</span><span id="line-175"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679139424"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="Network.API.Pushover.html#Response"><span class="hs-identifier hs-type">Response</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-176"></span><span>  </span><span id="local-6989586621679139422"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser Response
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">parseJSON</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Object</span></span><span> </span><span id="local-6989586621679139419"><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679139419"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Text -&gt; Text -&gt; [Text] -&gt; Response
+</span><a href="Network.API.Pushover.html#Response"><span class="hs-identifier hs-var">Response</span></a></span><span>
+</span><span id="line-177"></span><span>    </span><span class="annot"><span class="annottext">(Int -&gt; Text -&gt; Text -&gt; [Text] -&gt; Response)
+-&gt; Parser Int -&gt; Parser (Text -&gt; Text -&gt; [Text] -&gt; Response)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679139419"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Int
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;status&quot;</span></span><span>
+</span><span id="line-178"></span><span>    </span><span class="annot"><span class="annottext">Parser (Text -&gt; Text -&gt; [Text] -&gt; Response)
+-&gt; Parser Text -&gt; Parser (Text -&gt; [Text] -&gt; Response)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679139419"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Text
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;request&quot;</span></span><span>
+</span><span id="line-179"></span><span>    </span><span class="annot"><span class="annottext">Parser (Text -&gt; [Text] -&gt; Response)
+-&gt; Parser Text -&gt; Parser ([Text] -&gt; Response)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Parser Text -&gt; Parser Text
+forall (m :: * -&gt; *) a. Alternative m =&gt; a -&gt; m a -&gt; m a
+</span><span class="hs-identifier hs-var">option</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;&quot;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679139419"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Text
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;receipt&quot;</span></span><span class="hs-special">)</span><span>
+</span><span id="line-180"></span><span>    </span><span class="annot"><span class="annottext">Parser ([Text] -&gt; Response) -&gt; Parser [Text] -&gt; Parser Response
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; Parser [Text] -&gt; Parser [Text]
+forall (m :: * -&gt; *) a. Alternative m =&gt; a -&gt; m a -&gt; m a
+</span><span class="hs-identifier hs-var">option</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679139419"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser [Text]
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;errors&quot;</span></span><span class="hs-special">)</span><span>
+</span><span id="line-181"></span><span>  </span><span class="annot"><span class="hs-identifier hs-var">parseJSON</span></span><span> </span><span id="local-6989586621679139417"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679139417"><span class="hs-identifier hs-var">invalid</span></a></span></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Value -&gt; Parser Response
+forall a. String -&gt; Value -&gt; Parser a
+</span><span class="hs-identifier hs-var">typeMismatch</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;Response&quot;</span></span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679139417"><span class="hs-identifier hs-var">invalid</span></a></span><span>
+</span><span id="line-182"></span><span>
+</span><span id="line-183"></span><span class="annot"><a href="Network.API.Pushover.html#parseResponse"><span class="hs-identifier hs-type">parseResponse</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">L.ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="Network.API.Pushover.html#Response"><span class="hs-identifier hs-type">Response</span></a></span><span> </span><span class="annot"><a href="Network.API.Pushover.html#Response"><span class="hs-identifier hs-type">Response</span></a></span><span>
+</span><span id="line-184"></span><span id="parseResponse"><span class="annot"><span class="annottext">parseResponse :: ByteString -&gt; Either Response Response
+</span><a href="Network.API.Pushover.html#parseResponse"><span class="hs-identifier hs-var hs-var">parseResponse</span></a></span></span><span> </span><span id="local-6989586621679139416"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679139416"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Either String Response
+forall a. FromJSON a =&gt; ByteString -&gt; Either String a
+</span><span class="hs-identifier hs-var">eitherDecode</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679139416"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-185"></span><span>                    </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679139415"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679139415"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Response -&gt; Either Response Response
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Response :: Int -&gt; Text -&gt; Text -&gt; [Text] -&gt; Response
+</span><a href="Network.API.Pushover.html#Response"><span class="hs-identifier hs-type">Response</span></a></span><span class="hs-special">{</span><span class="annot"><span class="annottext">_status :: Int
+</span><a href="Network.API.Pushover.html#_status"><span class="hs-identifier hs-var">_status</span></a></span><span class="hs-glyph">=</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">_request :: Text
+</span><a href="Network.API.Pushover.html#_request"><span class="hs-identifier hs-var">_request</span></a></span><span class="hs-glyph">=</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">_receipt :: Text
+</span><a href="Network.API.Pushover.html#_receipt"><span class="hs-identifier hs-var">_receipt</span></a></span><span class="hs-glyph">=</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">_errors :: [Text]
+</span><a href="Network.API.Pushover.html#_errors"><span class="hs-identifier hs-var">_errors</span></a></span><span class="hs-glyph">=</span><span class="hs-special">[</span><span class="annot"><span class="annottext">String -&gt; Text
+</span><span class="hs-identifier hs-var">pack</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679139415"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">]</span><span class="hs-special">}</span><span class="hs-special">)</span><span>
+</span><span id="line-186"></span><span>                    </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679139414"><span class="annot"><span class="annottext">Response
+</span><a href="#local-6989586621679139414"><span class="hs-identifier hs-var">b'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Response
+</span><a href="#local-6989586621679139414"><span class="hs-identifier hs-var">b'</span></a></span><span> </span><span class="annot"><span class="annottext">Response -&gt; Getting Int Response Int -&gt; Int
+forall s a. s -&gt; Getting a s a -&gt; a
+</span><span class="hs-operator hs-var">^.</span></span><span class="annot"><span class="annottext">Getting Int Response Int
+Lens' Response Int
+</span><a href="Network.API.Pushover.html#status"><span class="hs-identifier hs-var">status</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Response -&gt; Either Response Response
+forall a b. b -&gt; Either a b
+</span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="annot"><span class="annottext">Response
+</span><a href="#local-6989586621679139414"><span class="hs-identifier hs-var">b'</span></a></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Response -&gt; Either Response Response
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">Response
+</span><a href="#local-6989586621679139414"><span class="hs-identifier hs-var">b'</span></a></span><span>
+</span><span id="line-187"></span><span>
+</span><span id="line-188"></span><span class="annot"><a href="Network.API.Pushover.html#statusCheck"><span class="hs-identifier hs-type">statusCheck</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ResponseChecker</span></span><span>
+</span><span id="line-189"></span><span id="statusCheck"><span class="annot"><span class="annottext">statusCheck :: [Int] -&gt; ResponseChecker
+</span><a href="Network.API.Pushover.html#statusCheck"><span class="hs-identifier hs-var hs-var">statusCheck</span></a></span></span><span> </span><span id="local-6989586621679139412"><span class="annot"><span class="annottext">[Int]
+</span><a href="#local-6989586621679139412"><span class="hs-identifier hs-var">o</span></a></span></span><span> </span><span class="annot"><span class="annottext">Request
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679139411"><span class="annot"><span class="annottext">Response BodyReader
+</span><a href="#local-6989586621679139411"><span class="hs-identifier hs-var">r</span></a></span></span><span>
+</span><span id="line-190"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Response BodyReader
+</span><a href="#local-6989586621679139411"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Response BodyReader -&gt; Getting Int (Response BodyReader) Int -&gt; Int
+forall s a. s -&gt; Getting a s a -&gt; a
+</span><span class="hs-operator hs-var">^.</span></span><span> </span><span class="annot"><span class="annottext">(Status -&gt; Const Int Status)
+-&gt; Response BodyReader -&gt; Const Int (Response BodyReader)
+forall body. Lens' (Response body) Status
+</span><span class="hs-identifier hs-var">responseStatus</span></span><span> </span><span class="annot"><span class="annottext">((Status -&gt; Const Int Status)
+ -&gt; Response BodyReader -&gt; Const Int (Response BodyReader))
+-&gt; ((Int -&gt; Const Int Int) -&gt; Status -&gt; Const Int Status)
+-&gt; Getting Int (Response BodyReader) Int
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Const Int Int) -&gt; Status -&gt; Const Int Status
+Lens' Status Int
+</span><span class="hs-identifier hs-var">statusCode</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; [Int] -&gt; Bool
+forall (t :: * -&gt; *) a. (Foldable t, Eq a) =&gt; a -&gt; t a -&gt; Bool
+</span><span class="hs-operator hs-var">`elem`</span></span><span> </span><span class="annot"><span class="annottext">[Int]
+</span><a href="#local-6989586621679139412"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">() -&gt; IO ()
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-191"></span><span class="annot"><a href="Network.API.Pushover.html#statusCheck"><span class="hs-identifier hs-var">statusCheck</span></a></span><span> </span><span class="annot"><span class="annottext">[Int]
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679139409"><span class="annot"><span class="annottext">Request
+</span><a href="#local-6989586621679139409"><span class="hs-identifier hs-var">req</span></a></span></span><span> </span><span id="local-6989586621679139408"><span class="annot"><span class="annottext">Response BodyReader
+</span><a href="#local-6989586621679139408"><span class="hs-identifier hs-var">res</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-192"></span><span>  </span><span id="local-6989586621679139407"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679139407"><span class="hs-identifier hs-var">bod</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Response BodyReader
+</span><a href="#local-6989586621679139408"><span class="hs-identifier hs-var">res</span></a></span><span> </span><span class="annot"><span class="annottext">Response BodyReader
+-&gt; Getting BodyReader (Response BodyReader) BodyReader
+-&gt; BodyReader
+forall s a. s -&gt; Getting a s a -&gt; a
+</span><span class="hs-operator hs-var">^.</span></span><span> </span><span class="annot"><span class="annottext">Getting BodyReader (Response BodyReader) BodyReader
+forall body0 body1.
+Lens (Response body0) (Response body1) body0 body1
+</span><span class="hs-identifier hs-var">responseBody</span></span><span>
+</span><span id="line-193"></span><span>  </span><span class="annot"><span class="annottext">HttpException -&gt; IO ()
+forall e a. Exception e =&gt; e -&gt; IO a
+</span><span class="hs-identifier hs-var">throwIO</span></span><span> </span><span class="annot"><span class="annottext">(HttpException -&gt; IO ()) -&gt; HttpException -&gt; IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Request -&gt; HttpExceptionContent -&gt; HttpException
+</span><span class="hs-identifier hs-var">HttpExceptionRequest</span></span><span> </span><span class="annot"><span class="annottext">Request
+</span><a href="#local-6989586621679139409"><span class="hs-identifier hs-var">req</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Response () -&gt; ByteString -&gt; HttpExceptionContent
+</span><span class="hs-identifier hs-var">StatusCodeException</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Response BodyReader -&gt; Response ()
+forall (f :: * -&gt; *) a. Functor f =&gt; f a -&gt; f ()
+</span><span class="hs-identifier hs-var">void</span></span><span> </span><span class="annot"><span class="annottext">Response BodyReader
+</span><a href="#local-6989586621679139408"><span class="hs-identifier hs-var">res</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679139407"><span class="hs-identifier hs-var">bod</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-194"></span><span>
+</span><span id="line-195"></span><span class="annot"><a href="Network.API.Pushover.html#opts"><span class="hs-identifier hs-type">opts</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Options</span></span><span>
+</span><span id="line-196"></span><span id="opts"><span class="annot"><span class="annottext">opts :: Options
+</span><a href="Network.API.Pushover.html#opts"><span class="hs-identifier hs-var hs-var">opts</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Options
+</span><span class="hs-identifier hs-var">defaults</span></span><span> </span><span class="annot"><span class="annottext">Options -&gt; (Options -&gt; Options) -&gt; Options
+forall a b. a -&gt; (a -&gt; b) -&gt; b
+</span><span class="hs-operator hs-var">&amp;</span></span><span> </span><span class="annot"><span class="annottext">(Maybe ResponseChecker -&gt; Identity (Maybe ResponseChecker))
+-&gt; Options -&gt; Identity Options
+Lens' Options (Maybe ResponseChecker)
+</span><span class="hs-identifier hs-var">checkResponse</span></span><span> </span><span class="annot"><span class="annottext">((Maybe ResponseChecker -&gt; Identity (Maybe ResponseChecker))
+ -&gt; Options -&gt; Identity Options)
+-&gt; Maybe ResponseChecker -&gt; Options -&gt; Options
+forall s t a b. ASetter s t a b -&gt; b -&gt; s -&gt; t
+</span><span class="hs-operator hs-var">.~</span></span><span> </span><span class="annot"><span class="annottext">ResponseChecker -&gt; Maybe ResponseChecker
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Int] -&gt; ResponseChecker
+</span><a href="Network.API.Pushover.html#statusCheck"><span class="hs-identifier hs-var">statusCheck</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">200</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">400</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><span id="line-197"></span><span>
+</span><span id="line-198"></span><span class="annot"><a href="Network.API.Pushover.html#transmit"><span class="hs-identifier hs-type">transmit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#Message"><span class="hs-identifier hs-type">Message</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="Network.API.Pushover.html#Response"><span class="hs-identifier hs-type">Response</span></a></span><span> </span><span class="annot"><a href="Network.API.Pushover.html#Response"><span class="hs-identifier hs-type">Response</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-199"></span><span id="transmit"><span class="annot"><span class="annottext">transmit :: String -&gt; Message -&gt; IO (Either Response Response)
+</span><a href="Network.API.Pushover.html#transmit"><span class="hs-identifier hs-var hs-var">transmit</span></a></span></span><span> </span><span id="local-6989586621679139400"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679139400"><span class="hs-identifier hs-var">u</span></a></span></span><span> </span><span id="local-6989586621679139399"><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679139399"><span class="hs-identifier hs-var">note</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-200"></span><span>  </span><span id="local-6989586621679139398"><span class="annot"><span class="annottext">Response ByteString
+</span><a href="#local-6989586621679139398"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Options -&gt; String -&gt; [FormParam] -&gt; IO (Response ByteString)
+forall a.
+Postable a =&gt;
+Options -&gt; String -&gt; a -&gt; IO (Response ByteString)
+</span><span class="hs-identifier hs-var">postWith</span></span><span> </span><span class="annot"><span class="annottext">Options
+</span><a href="Network.API.Pushover.html#opts"><span class="hs-identifier hs-var">opts</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679139400"><span class="hs-identifier hs-var">u</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Message -&gt; [FormParam]
+</span><a href="Network.API.Pushover.html#params"><span class="hs-identifier hs-var">params</span></a></span><span> </span><span class="annot"><span class="annottext">Message
+</span><a href="#local-6989586621679139399"><span class="hs-identifier hs-var">note</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-201"></span><span>  </span><span class="annot"><span class="annottext">Either Response Response -&gt; IO (Either Response Response)
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Either Response Response -&gt; IO (Either Response Response))
+-&gt; Either Response Response -&gt; IO (Either Response Response)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Either Response Response
+</span><a href="Network.API.Pushover.html#parseResponse"><span class="hs-identifier hs-var">parseResponse</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; Either Response Response)
+-&gt; ByteString -&gt; Either Response Response
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Response ByteString
+</span><a href="#local-6989586621679139398"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Response ByteString
+-&gt; Getting ByteString (Response ByteString) ByteString
+-&gt; ByteString
+forall s a. s -&gt; Getting a s a -&gt; a
+</span><span class="hs-operator hs-var">^.</span></span><span> </span><span class="annot"><span class="annottext">Getting ByteString (Response ByteString) ByteString
+forall body0 body1.
+Lens (Response body0) (Response body1) body0 body1
+</span><span class="hs-identifier hs-var">responseBody</span></span><span>
+</span><span id="line-202"></span><span>
+</span><span id="line-203"></span><span class="hs-comment">-- | Send a message.</span><span>
+</span><span id="line-204"></span><span class="annot"><a href="Network.API.Pushover.html#sendMessage"><span class="hs-identifier hs-type">sendMessage</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Network.API.Pushover.html#Message"><span class="hs-identifier hs-type">Message</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="Network.API.Pushover.html#Response"><span class="hs-identifier hs-type">Response</span></a></span><span> </span><span class="annot"><a href="Network.API.Pushover.html#Response"><span class="hs-identifier hs-type">Response</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-205"></span><span id="sendMessage"><span class="annot"><span class="annottext">sendMessage :: Message -&gt; IO (Either Response Response)
+</span><a href="Network.API.Pushover.html#sendMessage"><span class="hs-identifier hs-var hs-var">sendMessage</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Message -&gt; IO (Either Response Response)
+</span><a href="Network.API.Pushover.html#transmit"><span class="hs-identifier hs-var">transmit</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;https://api.pushover.net/1/messages.json&quot;</span></span><span>
+</span><span id="line-206"></span><span>
+</span><span id="line-207"></span><span class="annot"><a href="Network.API.Pushover.html#stime"><span class="hs-identifier hs-type">stime</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Scientific</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">UTCTime</span></span><span>
+</span><span id="line-208"></span><span id="stime"><span class="annot"><span class="annottext">stime :: Scientific -&gt; UTCTime
+</span><a href="Network.API.Pushover.html#stime"><span class="hs-identifier hs-var hs-var">stime</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SystemTime -&gt; UTCTime
+</span><span class="hs-identifier hs-var">systemToUTCTime</span></span><span> </span><span class="annot"><span class="annottext">(SystemTime -&gt; UTCTime)
+-&gt; (Scientific -&gt; SystemTime) -&gt; Scientific -&gt; UTCTime
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(Int64 -&gt; Word32 -&gt; SystemTime) -&gt; Word32 -&gt; Int64 -&gt; SystemTime
+forall a b c. (a -&gt; b -&gt; c) -&gt; b -&gt; a -&gt; c
+</span><span class="hs-identifier hs-var">flip</span></span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Word32 -&gt; SystemTime
+</span><span class="hs-identifier hs-var">MkSystemTime</span></span><span> </span><span class="annot"><span class="annottext">Word32
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">(Int64 -&gt; SystemTime)
+-&gt; (Scientific -&gt; Int64) -&gt; Scientific -&gt; SystemTime
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Maybe Int64 -&gt; Int64
+forall a. HasCallStack =&gt; Maybe a -&gt; a
+</span><span class="hs-identifier hs-var">fromJust</span></span><span> </span><span class="annot"><span class="annottext">(Maybe Int64 -&gt; Int64)
+-&gt; (Scientific -&gt; Maybe Int64) -&gt; Scientific -&gt; Int64
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Scientific -&gt; Maybe Int64
+forall i. (Integral i, Bounded i) =&gt; Scientific -&gt; Maybe i
+</span><span class="hs-identifier hs-var">toBoundedInteger</span></span><span>
+</span><span id="line-209"></span><span>
+</span><span id="line-210"></span><span class="hs-comment">-- | An acknowledgment of an emergency message.</span><span>
+</span><span id="line-211"></span><span id="local-6989586621679139393"><span id="local-6989586621679139394"></span></span><span class="hs-keyword">data</span><span> </span><span id="Acknowledgment"><span class="annot"><a href="Network.API.Pushover.html#Acknowledgment"><span class="hs-identifier hs-var">Acknowledgment</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Acknowledgment"><span class="annot"><a href="Network.API.Pushover.html#Acknowledgment"><span class="hs-identifier hs-var">Acknowledgment</span></a></span></span><span class="hs-special">{</span><span>
+</span><span id="line-212"></span><span>  </span><span id="_ackAt"><span class="annot"><span class="annottext">Acknowledgment -&gt; UTCTime
+</span><a href="Network.API.Pushover.html#_ackAt"><span class="hs-identifier hs-var hs-var">_ackAt</span></a></span></span><span>   </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">UTCTime</span></span><span>
+</span><span id="line-213"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="_ackBy"><span class="annot"><span class="annottext">Acknowledgment -&gt; Text
+</span><a href="Network.API.Pushover.html#_ackBy"><span class="hs-identifier hs-var hs-var">_ackBy</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span>
+</span><span id="line-214"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="_ackOn"><span class="annot"><span class="annottext">Acknowledgment -&gt; Text
+</span><a href="Network.API.Pushover.html#_ackOn"><span class="hs-identifier hs-var hs-var">_ackOn</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span>
+</span><span id="line-215"></span><span>  </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span class="hs-special">(</span><span class="annot"><span class="annottext">(forall x. Acknowledgment -&gt; Rep Acknowledgment x)
+-&gt; (forall x. Rep Acknowledgment x -&gt; Acknowledgment)
+-&gt; Generic Acknowledgment
+forall x. Rep Acknowledgment x -&gt; Acknowledgment
+forall x. Acknowledgment -&gt; Rep Acknowledgment x
+forall a.
+(forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
+$cto :: forall x. Rep Acknowledgment x -&gt; Acknowledgment
+$cfrom :: forall x. Acknowledgment -&gt; Rep Acknowledgment x
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">Generic</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679139383"><span id="local-6989586621679139385"><span class="annot"><span class="annottext">Acknowledgment -&gt; Acknowledgment -&gt; Bool
+(Acknowledgment -&gt; Acknowledgment -&gt; Bool)
+-&gt; (Acknowledgment -&gt; Acknowledgment -&gt; Bool) -&gt; Eq Acknowledgment
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: Acknowledgment -&gt; Acknowledgment -&gt; Bool
+$c/= :: Acknowledgment -&gt; Acknowledgment -&gt; Bool
+== :: Acknowledgment -&gt; Acknowledgment -&gt; Bool
+$c== :: Acknowledgment -&gt; Acknowledgment -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679139377"><span id="local-6989586621679139379"><span id="local-6989586621679139381"><span class="annot"><span class="annottext">Int -&gt; Acknowledgment -&gt; ShowS
+[Acknowledgment] -&gt; ShowS
+Acknowledgment -&gt; String
+(Int -&gt; Acknowledgment -&gt; ShowS)
+-&gt; (Acknowledgment -&gt; String)
+-&gt; ([Acknowledgment] -&gt; ShowS)
+-&gt; Show Acknowledgment
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [Acknowledgment] -&gt; ShowS
+$cshowList :: [Acknowledgment] -&gt; ShowS
+show :: Acknowledgment -&gt; String
+$cshow :: Acknowledgment -&gt; String
+showsPrec :: Int -&gt; Acknowledgment -&gt; ShowS
+$cshowsPrec :: Int -&gt; Acknowledgment -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-216"></span><span>
+</span><span id="line-217"></span><span id="ackOn"><span id="ackBy"><span id="ackAt"><span class="hs-identifier">makeLenses</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">Acknowledgment</span></span></span></span><span>
+</span><span id="line-218"></span><span>
+</span><span id="line-219"></span><span class="hs-comment">-- | Receipt represents the current status of receipt of an emergency message.</span><span>
+</span><span id="line-220"></span><span id="local-6989586621679139375"><span id="local-6989586621679139376"></span></span><span class="hs-keyword">data</span><span> </span><span id="Receipt"><span class="annot"><a href="Network.API.Pushover.html#Receipt"><span class="hs-identifier hs-var">Receipt</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Receipt"><span class="annot"><a href="Network.API.Pushover.html#Receipt"><span class="hs-identifier hs-var">Receipt</span></a></span></span><span class="hs-special">{</span><span>
+</span><span id="line-221"></span><span>  </span><span id="_acknowledged"><span class="annot"><span class="annottext">Receipt -&gt; Maybe Acknowledgment
+</span><a href="Network.API.Pushover.html#_acknowledged"><span class="hs-identifier hs-var hs-var">_acknowledged</span></a></span></span><span>      </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="Network.API.Pushover.html#Acknowledgment"><span class="hs-identifier hs-type">Acknowledgment</span></a></span><span>
+</span><span id="line-222"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="_lastDeliveredAt"><span class="annot"><span class="annottext">Receipt -&gt; Maybe UTCTime
+</span><a href="Network.API.Pushover.html#_lastDeliveredAt"><span class="hs-identifier hs-var hs-var">_lastDeliveredAt</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">UTCTime</span></span><span>
+</span><span id="line-223"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="_expired"><span class="annot"><span class="annottext">Receipt -&gt; Bool
+</span><a href="Network.API.Pushover.html#_expired"><span class="hs-identifier hs-var hs-var">_expired</span></a></span></span><span>         </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-224"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="_expiresAt"><span class="annot"><span class="annottext">Receipt -&gt; Maybe UTCTime
+</span><a href="Network.API.Pushover.html#_expiresAt"><span class="hs-identifier hs-var hs-var">_expiresAt</span></a></span></span><span>       </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">UTCTime</span></span><span>
+</span><span id="line-225"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="_calledBackAt"><span class="annot"><span class="annottext">Receipt -&gt; Maybe UTCTime
+</span><a href="Network.API.Pushover.html#_calledBackAt"><span class="hs-identifier hs-var hs-var">_calledBackAt</span></a></span></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">UTCTime</span></span><span>
+</span><span id="line-226"></span><span>    </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span class="hs-special">(</span><span class="annot"><span class="annottext">(forall x. Receipt -&gt; Rep Receipt x)
+-&gt; (forall x. Rep Receipt x -&gt; Receipt) -&gt; Generic Receipt
+forall x. Rep Receipt x -&gt; Receipt
+forall x. Receipt -&gt; Rep Receipt x
+forall a.
+(forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
+$cto :: forall x. Rep Receipt x -&gt; Receipt
+$cfrom :: forall x. Receipt -&gt; Rep Receipt x
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">Generic</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679139363"><span id="local-6989586621679139365"><span class="annot"><span class="annottext">Receipt -&gt; Receipt -&gt; Bool
+(Receipt -&gt; Receipt -&gt; Bool)
+-&gt; (Receipt -&gt; Receipt -&gt; Bool) -&gt; Eq Receipt
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: Receipt -&gt; Receipt -&gt; Bool
+$c/= :: Receipt -&gt; Receipt -&gt; Bool
+== :: Receipt -&gt; Receipt -&gt; Bool
+$c== :: Receipt -&gt; Receipt -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679139357"><span id="local-6989586621679139359"><span id="local-6989586621679139361"><span class="annot"><span class="annottext">Int -&gt; Receipt -&gt; ShowS
+[Receipt] -&gt; ShowS
+Receipt -&gt; String
+(Int -&gt; Receipt -&gt; ShowS)
+-&gt; (Receipt -&gt; String) -&gt; ([Receipt] -&gt; ShowS) -&gt; Show Receipt
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [Receipt] -&gt; ShowS
+$cshowList :: [Receipt] -&gt; ShowS
+show :: Receipt -&gt; String
+$cshow :: Receipt -&gt; String
+showsPrec :: Int -&gt; Receipt -&gt; ShowS
+$cshowsPrec :: Int -&gt; Receipt -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-227"></span><span>
+</span><span id="line-228"></span><span id="lastDeliveredAt"><span id="expiresAt"><span id="expired"><span id="calledBackAt"><span id="acknowledged"><span class="hs-identifier">makeLenses</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">Receipt</span></span></span></span></span></span><span>
+</span><span id="line-229"></span><span>
+</span><span id="line-230"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679139354"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="Network.API.Pushover.html#Receipt"><span class="hs-identifier hs-type">Receipt</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-231"></span><span>  </span><span id="local-6989586621679139353"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser Receipt
+</span><a href="#local-6989586621679139353"><span class="hs-identifier hs-var hs-var hs-var hs-var">parseJSON</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Object</span></span><span> </span><span id="local-6989586621679139352"><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679139352"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-232"></span><span>    </span><span id="local-6989586621679139351"><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679139351"><span class="hs-identifier hs-var">sok</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Parser Bool
+</span><a href="#local-6989586621679139350"><span class="hs-identifier hs-var">pbool</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;status&quot;</span></span><span>
+</span><span id="line-233"></span><span>    </span><span class="annot"><span class="annottext">Bool -&gt; Parser ()
+forall (f :: * -&gt; *). Alternative f =&gt; Bool -&gt; f ()
+</span><span class="hs-identifier hs-var">guard</span></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679139351"><span class="hs-identifier hs-var">sok</span></a></span><span>
+</span><span id="line-234"></span><span>
+</span><span id="line-235"></span><span>    </span><span id="local-6989586621679139349"><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679139349"><span class="hs-identifier hs-var">sakd</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Parser Bool
+</span><a href="#local-6989586621679139350"><span class="hs-identifier hs-var">pbool</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;acknowledged&quot;</span></span><span>
+</span><span id="line-236"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679139348"><span class="annot"><span class="annottext">ack :: Parser (Maybe Acknowledgment)
+</span><a href="#local-6989586621679139348"><span class="hs-identifier hs-var hs-var">ack</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679139349"><span class="hs-identifier hs-var">sakd</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Parser (Maybe Acknowledgment)
+</span><a href="#local-6989586621679139347"><span class="hs-identifier hs-var">parseAck</span></a></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Maybe Acknowledgment -&gt; Parser (Maybe Acknowledgment)
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Maybe Acknowledgment
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-237"></span><span>    </span><span class="annot"><span class="annottext">Maybe Acknowledgment
+-&gt; Maybe UTCTime
+-&gt; Bool
+-&gt; Maybe UTCTime
+-&gt; Maybe UTCTime
+-&gt; Receipt
+</span><a href="Network.API.Pushover.html#Receipt"><span class="hs-identifier hs-var">Receipt</span></a></span><span>
+</span><span id="line-238"></span><span>      </span><span class="annot"><span class="annottext">(Maybe Acknowledgment
+ -&gt; Maybe UTCTime
+ -&gt; Bool
+ -&gt; Maybe UTCTime
+ -&gt; Maybe UTCTime
+ -&gt; Receipt)
+-&gt; Parser (Maybe Acknowledgment)
+-&gt; Parser
+     (Maybe UTCTime
+      -&gt; Bool -&gt; Maybe UTCTime -&gt; Maybe UTCTime -&gt; Receipt)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Maybe Acknowledgment)
+</span><a href="#local-6989586621679139348"><span class="hs-identifier hs-var">ack</span></a></span><span>
+</span><span id="line-239"></span><span>      </span><span class="annot"><span class="annottext">Parser
+  (Maybe UTCTime
+   -&gt; Bool -&gt; Maybe UTCTime -&gt; Maybe UTCTime -&gt; Receipt)
+-&gt; Parser (Maybe UTCTime)
+-&gt; Parser (Bool -&gt; Maybe UTCTime -&gt; Maybe UTCTime -&gt; Receipt)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Parser (Maybe UTCTime)
+</span><a href="#local-6989586621679139346"><span class="hs-identifier hs-var">ptime</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;last_delivered_at&quot;</span></span><span>
+</span><span id="line-240"></span><span>      </span><span class="annot"><span class="annottext">Parser (Bool -&gt; Maybe UTCTime -&gt; Maybe UTCTime -&gt; Receipt)
+-&gt; Parser Bool
+-&gt; Parser (Maybe UTCTime -&gt; Maybe UTCTime -&gt; Receipt)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Parser Bool
+</span><a href="#local-6989586621679139350"><span class="hs-identifier hs-var">pbool</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;expired&quot;</span></span><span>
+</span><span id="line-241"></span><span>      </span><span class="annot"><span class="annottext">Parser (Maybe UTCTime -&gt; Maybe UTCTime -&gt; Receipt)
+-&gt; Parser (Maybe UTCTime) -&gt; Parser (Maybe UTCTime -&gt; Receipt)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Parser (Maybe UTCTime)
+</span><a href="#local-6989586621679139346"><span class="hs-identifier hs-var">ptime</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;expires_at&quot;</span></span><span>
+</span><span id="line-242"></span><span>      </span><span class="annot"><span class="annottext">Parser (Maybe UTCTime -&gt; Receipt)
+-&gt; Parser (Maybe UTCTime) -&gt; Parser Receipt
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Parser (Maybe UTCTime)
+</span><a href="#local-6989586621679139346"><span class="hs-identifier hs-var">ptime</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;called_back_at&quot;</span></span><span>
+</span><span id="line-243"></span><span>
+</span><span id="line-244"></span><span>      </span><span class="hs-keyword">where</span><span>
+</span><span id="line-245"></span><span>        </span><span class="annot"><a href="#local-6989586621679139345"><span class="hs-identifier hs-type">zero</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679139344"><span class="hs-identifier hs-type">one</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Scientific</span></span><span>
+</span><span id="line-246"></span><span>        </span><span id="local-6989586621679139345"><span class="annot"><span class="annottext">zero :: Scientific
+</span><a href="#local-6989586621679139345"><span class="hs-identifier hs-var hs-var">zero</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Scientific
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-247"></span><span>        </span><span id="local-6989586621679139344"><span class="annot"><span class="annottext">one :: Scientific
+</span><a href="#local-6989586621679139344"><span class="hs-identifier hs-var hs-var">one</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Scientific
+</span><span class="hs-number">1</span></span><span>
+</span><span id="line-248"></span><span>
+</span><span id="line-249"></span><span>        </span><span id="local-6989586621679139350"><span class="annot"><span class="annottext">pbool :: Text -&gt; Parser Bool
+</span><a href="#local-6989586621679139350"><span class="hs-identifier hs-var hs-var">pbool</span></a></span></span><span> </span><span id="local-6989586621679139343"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679139343"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679139352"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Scientific
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679139343"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">Parser Scientific -&gt; (Scientific -&gt; Parser Bool) -&gt; Parser Bool
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679139342"><span class="annot"><span class="annottext">Scientific
+</span><a href="#local-6989586621679139342"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Parser Bool
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Scientific
+</span><a href="#local-6989586621679139342"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Scientific -&gt; Scientific -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Scientific
+</span><a href="#local-6989586621679139344"><span class="hs-identifier hs-var">one</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-250"></span><span>
+</span><span id="line-251"></span><span>        </span><span id="local-6989586621679139346"><span class="annot"><span class="annottext">ptime :: Text -&gt; Parser (Maybe UTCTime)
+</span><a href="#local-6989586621679139346"><span class="hs-identifier hs-var hs-var">ptime</span></a></span></span><span> </span><span id="local-6989586621679139341"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679139341"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-252"></span><span>          </span><span id="local-6989586621679139340"><span class="annot"><span class="annottext">Scientific
+</span><a href="#local-6989586621679139340"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679139352"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Scientific
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679139341"><span class="hs-identifier hs-var">s</span></a></span><span>
+</span><span id="line-253"></span><span>          </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Scientific
+</span><a href="#local-6989586621679139340"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Scientific -&gt; Scientific -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Scientific
+</span><a href="#local-6989586621679139345"><span class="hs-identifier hs-var">zero</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Maybe UTCTime -&gt; Parser (Maybe UTCTime)
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Maybe UTCTime
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Maybe UTCTime -&gt; Parser (Maybe UTCTime)
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Maybe UTCTime -&gt; Parser (Maybe UTCTime))
+-&gt; Maybe UTCTime -&gt; Parser (Maybe UTCTime)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">UTCTime -&gt; Maybe UTCTime
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Scientific -&gt; UTCTime
+</span><a href="Network.API.Pushover.html#stime"><span class="hs-identifier hs-var">stime</span></a></span><span> </span><span class="annot"><span class="annottext">Scientific
+</span><a href="#local-6989586621679139340"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-254"></span><span>
+</span><span id="line-255"></span><span>        </span><span id="local-6989586621679139339"><span class="annot"><span class="annottext">ptime' :: Text -&gt; Parser UTCTime
+</span><a href="#local-6989586621679139339"><span class="hs-identifier hs-var hs-var">ptime'</span></a></span></span><span> </span><span id="local-6989586621679139338"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679139338"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Scientific -&gt; UTCTime
+</span><a href="Network.API.Pushover.html#stime"><span class="hs-identifier hs-var">stime</span></a></span><span> </span><span class="annot"><span class="annottext">(Scientific -&gt; UTCTime) -&gt; Parser Scientific -&gt; Parser UTCTime
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679139352"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Scientific
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679139338"><span class="hs-identifier hs-var">s</span></a></span><span>
+</span><span id="line-256"></span><span>
+</span><span id="line-257"></span><span>        </span><span id="local-6989586621679139347"><span class="annot"><span class="annottext">parseAck :: Parser (Maybe Acknowledgment)
+</span><a href="#local-6989586621679139347"><span class="hs-identifier hs-var hs-var">parseAck</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-258"></span><span>          </span><span id="local-6989586621679139337"><span class="annot"><span class="annottext">Acknowledgment
+</span><a href="#local-6989586621679139337"><span class="hs-identifier hs-var">ack</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">UTCTime -&gt; Text -&gt; Text -&gt; Acknowledgment
+</span><a href="Network.API.Pushover.html#Acknowledgment"><span class="hs-identifier hs-var">Acknowledgment</span></a></span><span>
+</span><span id="line-259"></span><span>                 </span><span class="annot"><span class="annottext">(UTCTime -&gt; Text -&gt; Text -&gt; Acknowledgment)
+-&gt; Parser UTCTime -&gt; Parser (Text -&gt; Text -&gt; Acknowledgment)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Parser UTCTime
+</span><a href="#local-6989586621679139339"><span class="hs-identifier hs-var">ptime'</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;acknowledged_at&quot;</span></span><span>
+</span><span id="line-260"></span><span>                 </span><span class="annot"><span class="annottext">Parser (Text -&gt; Text -&gt; Acknowledgment)
+-&gt; Parser Text -&gt; Parser (Text -&gt; Acknowledgment)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679139352"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Text
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;acknowledged_by&quot;</span></span><span>
+</span><span id="line-261"></span><span>                 </span><span class="annot"><span class="annottext">Parser (Text -&gt; Acknowledgment)
+-&gt; Parser Text -&gt; Parser Acknowledgment
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621679139352"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Text -&gt; Parser Text
+forall a. FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+</span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;acknowledged_by_device&quot;</span></span><span>
+</span><span id="line-262"></span><span>          </span><span class="annot"><span class="annottext">Maybe Acknowledgment -&gt; Parser (Maybe Acknowledgment)
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Acknowledgment -&gt; Maybe Acknowledgment
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">Acknowledgment
+</span><a href="#local-6989586621679139337"><span class="hs-identifier hs-var">ack</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-263"></span><span>
+</span><span id="line-264"></span><span>  </span><span class="annot"><span class="hs-identifier hs-var">parseJSON</span></span><span> </span><span id="local-6989586621679139336"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679139336"><span class="hs-identifier hs-var">invalid</span></a></span></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Value -&gt; Parser Receipt
+forall a. String -&gt; Value -&gt; Parser a
+</span><span class="hs-identifier hs-var">typeMismatch</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;Response&quot;</span></span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679139336"><span class="hs-identifier hs-var">invalid</span></a></span><span>
+</span><span id="line-265"></span><span>
+</span><span id="line-266"></span><span class="hs-comment">-- | Get the Receipt for an emergency message.</span><span>
+</span><span id="line-267"></span><span class="annot"><a href="Network.API.Pushover.html#getReceipt"><span class="hs-identifier hs-type">getReceipt</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="annot"><a href="Network.API.Pushover.html#Receipt"><span class="hs-identifier hs-type">Receipt</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-268"></span><span id="getReceipt"><span class="annot"><span class="annottext">getReceipt :: Text -&gt; Text -&gt; IO (Either String Receipt)
+</span><a href="Network.API.Pushover.html#getReceipt"><span class="hs-identifier hs-var hs-var">getReceipt</span></a></span></span><span> </span><span id="local-6989586621679139335"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679139335"><span class="hs-identifier hs-var">tok</span></a></span></span><span> </span><span id="local-6989586621679139334"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679139334"><span class="hs-identifier hs-var">recpt</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-269"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679139333"><span class="annot"><span class="annottext">u :: Text
+</span><a href="#local-6989586621679139333"><span class="hs-identifier hs-var hs-var">u</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; Text
+forall a. Monoid a =&gt; [a] -&gt; a
+</span><span class="hs-identifier hs-var">mconcat</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;https://api.pushover.net/1/receipts/&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679139334"><span class="hs-identifier hs-var">recpt</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;.json?token=&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679139335"><span class="hs-identifier hs-var">tok</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-270"></span><span>  </span><span id="local-6989586621679139332"><span class="annot"><span class="annottext">Response ByteString
+</span><a href="#local-6989586621679139332"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Options -&gt; String -&gt; IO (Response ByteString)
+</span><span class="hs-identifier hs-var">getWith</span></span><span> </span><span class="annot"><span class="annottext">Options
+</span><a href="Network.API.Pushover.html#opts"><span class="hs-identifier hs-var">opts</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; String
+</span><span class="hs-identifier hs-var">unpack</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679139333"><span class="hs-identifier hs-var">u</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-271"></span><span>  </span><span class="annot"><span class="annottext">Either String Receipt -&gt; IO (Either String Receipt)
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Either String Receipt -&gt; IO (Either String Receipt))
+-&gt; Either String Receipt -&gt; IO (Either String Receipt)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Either String Receipt
+forall a. FromJSON a =&gt; ByteString -&gt; Either String a
+</span><span class="hs-identifier hs-var">eitherDecode</span></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; Either String Receipt)
+-&gt; ByteString -&gt; Either String Receipt
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Response ByteString
+</span><a href="#local-6989586621679139332"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Response ByteString
+-&gt; Getting ByteString (Response ByteString) ByteString
+-&gt; ByteString
+forall s a. s -&gt; Getting a s a -&gt; a
+</span><span class="hs-operator hs-var">^.</span></span><span> </span><span class="annot"><span class="annottext">Getting ByteString (Response ByteString) ByteString
+forall body0 body1.
+Lens (Response body0) (Response body1) body0 body1
+</span><span class="hs-identifier hs-var">responseBody</span></span><span>
+</span><span id="line-272"></span><span>
+</span><span id="line-273"></span><span>
+</span><span id="line-274"></span></pre></body></html>
