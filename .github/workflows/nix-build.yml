@@ -17,4 +17,4 @@ jobs:
       with:
         name: dustin
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
-    - run: nix-build -A babysitter.components.exes.babysitter
+    - run: nix-build -A pushover-hs.components.library
