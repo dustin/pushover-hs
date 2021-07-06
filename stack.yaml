@@ -1,3 +1,6 @@
 packages:
 - .
 resolver: lts-18.1
+
+nix:
+  packages: [zlib]
